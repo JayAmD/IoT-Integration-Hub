@@ -9,9 +9,9 @@ const path = require('path');
 
 const server = dgram.createSocket('udp4');
 
-const PORT = 5002;
-const HOST = '172.16.0.4';
-const LOG_FILE = path.join(__dirname, 'udp_messages.bin');
+const PORT = 12345;
+const HOST = '0.0.0.0';
+const LOG_FILE = path.join(__dirname, 'data.bin');
 
 // Event: When server starts listening
 server.on('listening', () => {
@@ -21,13 +21,13 @@ server.on('listening', () => {
 
 // Event: When a message is received
 server.on('message', (message, remote) => {
-    // console.log(`Received from ${remote.address}:${remote.port} - ${message}`);
+     console.log(`Received from ${remote.address}:${remote.port}`);
     
-    const timestamp = new Date().toISOString();
-    const logEntry = `[${timestamp}] From ${remote.address}:${remote.port}\n${message}\n---\n`;
+    // const timestamp = new Date().toISOString();
+    // const logEntry = `[${timestamp}] From ${remote.address}:${remote.port}\n${message}\n---\n`;
     
     // Write to file
-    fs.appendFile(LOG_FILE, logEntry, (err) => {
+    fs.writeFileSync(LOG_FILE, message, (err) => {
         if (err) {
             console.error(`Error writing to file: ${err}`);
         } else {

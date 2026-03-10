@@ -16,7 +16,8 @@ const errorMiddleware = (err, req, res, next) => {
 
     // Mongoose duplicate key
     if (err.code === 11000) {
-      const message = "Duplicate field value entered";
+      const message = `Duplicate field value entered in ${Object.keys(err.keyValue)}`;
+
       error = new Error(message);
       error.statusCode = 400;
     }
@@ -34,7 +35,6 @@ const errorMiddleware = (err, req, res, next) => {
       success: false,
       error: error.message || "Server Error",
     });
-
   } catch (error) {
     next(error);
   }

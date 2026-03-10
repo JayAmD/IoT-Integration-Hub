@@ -9,6 +9,12 @@ const deviceSchema = new mongoose.Schema(
       minLength: [1, "Device name must not be empty"],
       maxLength: [255, "Device name must be less than 255 characters long"],
     },
+    serialNumber: {
+      type: Number,
+      required: [true, "Serial number is required"],
+      unique: true,
+      trim: true,
+    },
     groupIds: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Group",
