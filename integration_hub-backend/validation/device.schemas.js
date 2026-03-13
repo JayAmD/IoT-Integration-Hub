@@ -1,31 +1,78 @@
-import mongoose from "mongoose";
+import z from "zod";
 
-const deviceSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: [true, "Device name is required"],
-      trim: true,
-      minLength: [1, "Device name must not be empty"],
-      maxLength: [255, "Device name must be less than 255 characters long"],
-    },
-    serialNumber: {
-      type: Number,
-      required: [true, "Serial number is required"],
-      unique: true,
-      trim: true,
-    },
-    groupIds: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Group",
-      default: [],
-    },
-  },
-  {
-    timestamps: true,
-  },
-);
+export const deviceCreateSchema = z.object({
+  body: z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, "Device name must not be empty")
+      .max(255, "Device name must be less than 255 characters long"),
 
-const Device = mongoose.model("Device", deviceSchema);
+    serialNumber: z
+      .number()
+      .positive()
+      .int("Serial number must be a whole number"),
 
-export default Device;
+    groupIds: z
+      .array(
+        z
+          .string()
+          .regex(
+            /^[0-9a-fA-F]{24}$/,
+            "Each group ID must be a valid MongoDB ObjectId",
+          ),
+      )
+      .optional(),
+  }),
+});
+
+export const deviceGetSchema = z.object({
+  query: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid device ID"),
+  }),
+});
+
+export const deviceListSchema = z.object({
+  query: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid device ID"),
+  }),
+  params: z.object({
+    sortBy: z.enum(["name", "lastSeen"]).optional(),
+    order: z.enum(["asc", "desc"]).optional(),
+  }),
+});
+
+export const deviceUpdateSchema = z.object({
+  query: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid device ID"),
+  }),
+  body: z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, "Device name must not be empty")
+      .max(255, "Device name must be less than 255 characters long")
+      .optional(),
+    serialNumber: z
+      .number()
+      .positive()
+      .int("Serial number must be a whole number")
+      .optional(),
+    groupIds: z
+      .array(
+        z
+          .string()
+          .regex(
+            /^[0-9a-fA-F]{24}$/,
+            "Each group ID must be a valid MongoDB ObjectId",
+          ),
+      )
+      .optional(),
+  }),
+});
+
+export const deviceDeleteSchema = z.object({
+  query: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid device ID"),
+  }),
+});

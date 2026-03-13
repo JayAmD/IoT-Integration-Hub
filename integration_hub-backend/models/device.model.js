@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { positive } from "zod";
 
 const deviceSchema = new mongoose.Schema(
   {
@@ -13,7 +14,7 @@ const deviceSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Serial number is required"],
       unique: true,
-      trim: true,
+      positive: [true, "Serial number must be a positive number"],
     },
     groupIds: {
       type: [mongoose.Schema.Types.ObjectId],
