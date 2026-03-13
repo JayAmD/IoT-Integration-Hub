@@ -5,7 +5,7 @@ const updateDevice = async (req, res, next) => {
     const device = await Device.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
     res.status(200).json({ success: true, data: device });
   } catch (e) {

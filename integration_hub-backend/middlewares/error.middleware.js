@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 const errorMiddleware = (err, req, res, next) => {
   try {
     let error = { ...err };
@@ -5,6 +7,13 @@ const errorMiddleware = (err, req, res, next) => {
     error.message = err.message;
 
     console.error(err);
+
+    // Zod validation error
+    if (err instanceof z.ZodError) {
+      const message = err.issues.map((e) => e.message).join(", ");
+      error = new Error(message);
+      error.statusCode = 400;
+    }
 
     // Mongoose bad ObjectId
     if (err.name === "CastError") {

@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 
 import { PORT } from "./config/env.js";
 
+import authRouter from "./routes/auth.routes.js";
 import deviceRouter from "./routes/device.routes.js";
 import connectToDatabase from "./database/mongodb.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
@@ -13,10 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
+app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/devices", deviceRouter);
 
 app.use(errorMiddleware)
