@@ -9,7 +9,7 @@ const logIn = async (req, res, next) => {
     const { email, password } = req.body;
 
     // Check if an user with this email exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
       const error = new Error("Invalid credentials");

@@ -8,10 +8,11 @@ import listDevices from "../services/device/list.js";
 import getDeviceDetail from "../services/device/getDetail.js";
 import deleteDevice from "../services/device/delete.js";
 import updateDevice from "../services/device/update.js";
+import authenticate from "../middlewares/auth.middleware.js";
 
 const deviceRouter = Router();
 
-deviceRouter.get("/", validate(deviceListSchema), listDevices);
+deviceRouter.get("/", validate(deviceListSchema), authenticate, listDevices);
 
 deviceRouter.get("/:id", validate(deviceGetSchema), getDeviceDetail);
 

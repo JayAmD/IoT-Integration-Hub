@@ -28,19 +28,24 @@ const signUp = async (req, res, next) => {
     session = await mongoose.startSession();
     session.startTransaction();
 
-    const newUsers = await User.create([{ email, password: hashedPassword }], {session,});
+    const newUsers = await User.create([{ email, password: hashedPassword }], { session });
 
-    const token = jwt.sign({ userId: newUsers[0]._id }, JWT_SECRET, {
+    const createdUser = newUsers[0];
+
+    const token = jwt.sign({ userId: createdUser._id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRES_IN,
     });
-
+    
     await session.commitTransaction();
     session.endSession();
+    
+    const safeUser = createdUser.toObject();
+    delete safeUser.password;
 
     res.status(201).json({
       success: true,
       message: "User created successfully",
-      data: { token, user: newUsers[0] },
+      data: { token, user: safeUser },
     });
   } catch (error) {
     if (session) {

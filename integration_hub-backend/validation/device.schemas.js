@@ -23,27 +23,24 @@ export const deviceCreateSchema = z.object({
           ),
       )
       .optional(),
-  }),
-});
+    }),
+  });
+  
+  export const deviceListSchema = z.object({
+    query: z.object({
+      sortBy: z.enum(["name", "lastSeen"]).optional(),
+      order: z.enum(["asc", "desc"]).optional(),
+    }),
+  });
 
 export const deviceGetSchema = z.object({
-  query: z.object({
-    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid device ID"),
-  }),
-});
-
-export const deviceListSchema = z.object({
-  query: z.object({
-    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid device ID"),
-  }),
   params: z.object({
-    sortBy: z.enum(["name", "lastSeen"]).optional(),
-    order: z.enum(["asc", "desc"]).optional(),
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid device ID"),
   }),
 });
 
 export const deviceUpdateSchema = z.object({
-  query: z.object({
+  params: z.object({
     id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid device ID"),
   }),
   body: z.object({
@@ -72,7 +69,7 @@ export const deviceUpdateSchema = z.object({
 });
 
 export const deviceDeleteSchema = z.object({
-  query: z.object({
+  params: z.object({
     id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid device ID"),
   }),
 });
