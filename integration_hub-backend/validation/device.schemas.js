@@ -9,9 +9,7 @@ export const deviceCreateSchema = z.object({
       .max(255, "Device name must be less than 255 characters long"),
 
     serialNumber: z
-      .number()
-      .positive()
-      .int("Serial number must be a whole number"),
+      .number(),
 
     groupIds: z
       .array(
@@ -49,11 +47,6 @@ export const deviceUpdateSchema = z.object({
       .trim()
       .min(1, "Device name must not be empty")
       .max(255, "Device name must be less than 255 characters long")
-      .optional(),
-    serialNumber: z
-      .number()
-      .positive()
-      .int("Serial number must be a whole number")
       .optional(),
     groupIds: z
       .array(

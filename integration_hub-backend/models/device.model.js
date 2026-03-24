@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { positive } from "zod";
 
 const deviceSchema = new mongoose.Schema(
   {
@@ -14,7 +13,12 @@ const deviceSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Serial number is required"],
       unique: true,
-      positive: [true, "Serial number must be a positive number"],
+      immutable: true,
+    },
+    ownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     groupIds: {
       type: [mongoose.Schema.Types.ObjectId],

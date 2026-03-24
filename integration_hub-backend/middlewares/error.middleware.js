@@ -40,6 +40,7 @@ const errorMiddleware = (err, req, res, next) => {
       error.statusCode = 400;
     }
 
+    // General server error
     res.status(error.statusCode || 500).json({
       success: false,
       error: error.message || "Server Error",
