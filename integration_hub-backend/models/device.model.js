@@ -25,10 +25,7 @@ const deviceSchema = new mongoose.Schema(
       ref: "Group",
       default: [],
     },
-  },
-  {
-    timestamps: true,
-  },
+  }, {timestamps: true}
 );
 
 const Device = mongoose.model("Device", deviceSchema);

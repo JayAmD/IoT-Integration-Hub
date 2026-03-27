@@ -5,11 +5,11 @@ import { deviceCreateSchema, deviceGetSchema, deviceListSchema, deviceUpdateSche
 
 import authenticate from "../middlewares/auth.middleware.js";
 
-import createDevice from "../services/device/create.js";
-import listDevices from "../services/device/list.js";
-import getDeviceDetail from "../services/device/getDetail.js";
-import deleteDevice from "../services/device/delete.js";
-import updateDevice from "../services/device/update.js";
+import createDevice from "../controllers/device/create.js";
+import listDevices from "../controllers/device/list.js";
+import getDeviceDetail from "../controllers/device/getDetail.js";
+import deleteDevice from "../controllers/device/delete.js";
+import updateDevice from "../controllers/device/update.js";
 
 const deviceRouter = Router();
 

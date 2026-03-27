@@ -3,8 +3,8 @@ import { Router } from "express";
 import validate from "../middlewares/validate.middleware.js";
 import { signUpSchema, logInSchema } from "../validation/auth.schemas.js";
 
-import signUp from "../services/auth/signUp.js";
-import logIn from "../services/auth/logIn.js";
+import signUp from "../controllers/auth/signUp.js";
+import logIn from "../controllers/auth/logIn.js";
 
 const authRouter = Router();
 
