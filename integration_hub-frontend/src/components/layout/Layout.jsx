@@ -1,15 +1,15 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "./Navbar.jsx";
+import Header from "./Header.jsx";
 import Sidebar from "./Sidebar.jsx";
-import { SidebarProvider } from "../context/SidebarContext";
+import { SidebarProvider } from "../../context/SidebarContext.jsx";
 import { Toolbar, Box } from "@mui/material";
 
 const Layout = () => {
   return (
     <SidebarProvider>
       <Box>
-        <Navbar />
-        <Toolbar /> {/* Spacer to push content below the fixed Navbar */}
+        <Header />
+        <Toolbar /> {/* Spacer to push content below the fixed Header */}
         <Box sx={{ display: "flex" }}>
           <Sidebar />
           <Outlet />

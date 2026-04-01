@@ -3,9 +3,9 @@ import { AppBar, Toolbar, Button, Box, Typography, IconButton } from '@mui/mater
 import DeviceHubOutlinedIcon from '@mui/icons-material/DeviceHubOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from "@mui/icons-material/Close";
-import { SidebarContext } from '../context/SidebarContext';
+import { SidebarContext } from '../../context/SidebarContext.jsx';
 
-const Navbar = () => {
+const Header = () => {
     const { open, toggleOpen } = useContext(SidebarContext);
 
     return (
@@ -41,4 +41,4 @@ const Navbar = () => {
     );
 };
 
-export default Navbar;
+export default Header;

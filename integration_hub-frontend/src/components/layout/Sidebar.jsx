@@ -4,7 +4,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import PeopleIcon from "@mui/icons-material/People";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import { useNavigate } from "react-router-dom";
-import { SidebarContext } from "../context/SidebarContext";
+import { SidebarContext } from "../../context/SidebarContext.jsx";
 
 import {
   Drawer,
@@ -13,7 +13,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Box,
   useMediaQuery,
   useTheme,
   Toolbar,
@@ -51,7 +50,7 @@ const Sidebar = () => {
           },
         }}
       >
-        <Toolbar/> {/* Spacer to align with Navbar */}
+        <Toolbar/> {/* Spacer to align with Header */}
         <List>
           {menuItems.map((item) => (
             <ListItem key={item.label} disablePadding>
