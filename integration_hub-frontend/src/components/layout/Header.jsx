@@ -1,12 +1,17 @@
 import React, { useContext } from 'react';
-import { AppBar, Toolbar, Button, Box, Typography, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Button, Box, Typography, IconButton, Avatar, Tooltip } from '@mui/material';
 import DeviceHubOutlinedIcon from '@mui/icons-material/DeviceHubOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from "@mui/icons-material/Close";
+import PersonIcon from '@mui/icons-material/Person';
 import { SidebarContext } from '../../context/SidebarContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
     const { open, toggleOpen } = useContext(SidebarContext);
+    const { isLoggedIn, logout } = useAuth();
+    const navigate = useNavigate();
 
     return (
         <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -24,17 +29,34 @@ const Header = () => {
                      <DeviceHubOutlinedIcon />
                      <Typography variant='h6' sx={{display:{xs:"none", sm:"inline"}}}>IoT Integration Hub</Typography>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Button color="inherit" href="/login">
-                        Log In
-                    </Button>
-                    <Button 
-                        variant="contained" 
-                        color="secondary" 
-                        href="/signup"
-                    >
-                        Sign Up
-                    </Button>
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                    {isLoggedIn ? (
+                        <>
+                            <Tooltip title="User Profile">
+                                <IconButton color="inherit">
+                                    <Avatar sx={{ bgcolor: 'secondary.main', width: 32, height: 32 }}>
+                                        <PersonIcon fontSize="small" />
+                                    </Avatar>
+                                </IconButton>
+                            </Tooltip>
+                            <Button color="inherit" onClick={logout}>
+                                Log Out
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button color="inherit" onClick={() => navigate('/login')}>
+                                Log In
+                            </Button>
+                            <Button 
+                                variant="contained" 
+                                color="secondary" 
+                                onClick={() => navigate('/signup')}
+                            >
+                                Sign Up
+                            </Button>
+                        </>
+                    )}
                 </Box>
             </Toolbar>
         </AppBar>

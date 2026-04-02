@@ -1,7 +1,8 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
-import { PORT } from "./config/env.js";
+import { PORT, CORS_ORIGIN } from "./config/env.js";
 
 import connectToDatabase from "./database/mongodb.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
@@ -14,7 +15,10 @@ import addMessage from "./controllers/udp-server/addMessage.js";
 
 const app = express();
 
-const router = express.Router();
+app.use(cors({
+  origin: CORS_ORIGIN || "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
