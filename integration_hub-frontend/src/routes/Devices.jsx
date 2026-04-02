@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Snackbar, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DevicesHeader from "../components/device/DevicesHeader.jsx";
 import DeviceList from "../components/device/DeviceList.jsx";
+import AddDeviceModal from "../components/device/AddDeviceModal.jsx";
 
 const MOCK_DEVICES = [
   {
@@ -33,13 +34,32 @@ const MOCK_DEVICES = [
 
 export default function Devices() {
   const navigate = useNavigate();
+  // Move mock devices to state so we can add to them
+  const [devices, setDevices] = useState(MOCK_DEVICES);
+  
   const [sortBy, setSortBy] = useState("name-asc");
   const [groupFilter, setGroupFilter] = useState("all");
   const [searchValue, setSearchValue] = useState("");
+  
+  // State for the Add Device Modal
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  const handleAddDevice = () => {
-    // Hook this up to a modal or route when device creation flow is ready.
-    console.log("Add device clicked");
+  const handleAddDeviceClick = () => {
+    setIsAddModalOpen(true);
+  };
+
+  const handleDeviceAdded = (newDevice) => {
+    // Add the new device to our state list
+    setDevices((prevDevices) => [newDevice, ...prevDevices]);
+    setSnackbarOpen(true);
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
   };
 
   const handleOpenDetail = (deviceId) => {
@@ -52,7 +72,7 @@ export default function Devices() {
 
   const normalizedSearch = searchValue.trim().toLowerCase();
 
-  const filteredDevices = MOCK_DEVICES.filter((device) => {
+  const filteredDevices = devices.filter((device) => {
     const inSelectedGroup =
       groupFilter === "all" || device.groupName.toLowerCase().replace(/\s+/g, "-") === groupFilter;
 
@@ -92,7 +112,7 @@ export default function Devices() {
         onSortByChange={setSortBy}
         groupFilter={groupFilter}
         onGroupFilterChange={setGroupFilter}
-        onAddDevice={handleAddDevice}
+        onAddDevice={handleAddDeviceClick}
       />
 
       <DeviceList
@@ -100,6 +120,23 @@ export default function Devices() {
         onOpenDetail={handleOpenDetail}
         onOpenMessages={handleOpenMessages}
       />
+
+      <AddDeviceModal 
+        open={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        onAddDevice={handleDeviceAdded} 
+      />
+
+      <Snackbar 
+        open={snackbarOpen} 
+        autoHideDuration={4000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%', fontWeight: 'bold' }}>
+          Device added successfully!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

@@ -58,13 +58,14 @@ export default function DevicesHeader(props) {
                         placeholder="Search devices"
                         value={searchValue}
                         onChange={(event) => onSearchChange(event.target.value)}
-                        sx={{width: "100%", maxWidth: {lg: 340}, ml: {lg: "auto"}}}
+                        sx={{width: "100%", maxWidth: {lg: 340}, ml: {lg: "auto"}, borderRadius: 2}}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
                                     <SearchIcon fontSize="small" color="action"/>
                                 </InputAdornment>
                             ),
+                            sx: { borderRadius: 2 }
                         }}
                     />
 
@@ -75,6 +76,7 @@ export default function DevicesHeader(props) {
                             value={sortBy}
                             label="Sort by"
                             onChange={(event) => onSortByChange(event.target.value)}
+                            sx={{ borderRadius: 2 }}
                         >
                             <MenuItem value="name-asc">Name (A-Z)</MenuItem>
                             <MenuItem value="name-desc">Name (Z-A)</MenuItem>
@@ -90,6 +92,7 @@ export default function DevicesHeader(props) {
                             value={groupFilter}
                             label="Filter group"
                             onChange={(event) => onGroupFilterChange(event.target.value)}
+                            sx={{ borderRadius: 2 }}
                         >
                             <MenuItem value="all">All groups</MenuItem>
                             <MenuItem value="forest-nodes">Forest nodes</MenuItem>
@@ -102,4 +105,3 @@ export default function DevicesHeader(props) {
         </Paper>
     );
 }
-
