@@ -9,8 +9,8 @@ const path = require('path');
 
 const server = dgram.createSocket('udp4');
 
-const PORT = 12345;
-const HOST = '0.0.0.0';
+const PORT = 5002;
+const HOST = '10.0.0.4';
 const LOG_FILE = path.join(__dirname, 'data.bin');
 
 // Event: When server starts listening
