@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   Button,
@@ -21,6 +20,8 @@ import {
   Close as CloseIcon,
   Sensors as SensorsIcon,
 } from '@mui/icons-material';
+
+import { deviceApi } from '../../api/deviceApi.js';
 
 // Mock list of groups for the multiselect
 const MOCK_GROUPS = [
@@ -79,24 +80,23 @@ const AddDeviceModal = ({ open, onClose, onAddDevice }) => {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Pass the new device back to the parent
-      const newDevice = {
-        id: `device-${Date.now()}`, // Fake ID
+      // Create the device payload
+      const devicePayload = {
         name: formData.name.trim(),
         serialNumber: formData.serialNumber.trim(),
-        groupName: formData.groups.length > 0 ? formData.groups.join(', ') : 'Unassigned',
-        lastSeenAt: new Date().toISOString(),
-        lastSeenLabel: 'Just now',
+        groups: formData.groups,
       };
 
-      onAddDevice(newDevice);
+      // Call our centralized API wrapper
+      await deviceApi.create(devicePayload);
+      
+      // Since we just tell the parent to refresh the list, we don't need to pass the object back
+      onAddDevice();
       handleClose();
     } catch (err) {
       console.error('Failed to add device:', err);
-      setError('Failed to add device. Please try again.');
+      // The error message comes straight from our client.js Promise.reject!
+      setError(err.message || 'Failed to add device. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -260,7 +260,7 @@ const AddDeviceModal = ({ open, onClose, onAddDevice }) => {
             disabled={isSubmitting}
             sx={{ textTransform: 'none', fontWeight: 'bold', minWidth: 100 }}
           >
-            {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Add Device'}
+            {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Register Device'}
           </Button>
         </DialogActions>
       </Box>

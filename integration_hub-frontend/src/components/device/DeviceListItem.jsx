@@ -7,15 +7,17 @@ export default function DeviceListItem({
   onOpenDetail,
   onOpenMessages,
 }) {
+  const deviceId = device._id;
+
   const handleMessagesClick = (event) => {
     event.stopPropagation();
-    onOpenMessages(device.id);
+    onOpenMessages(deviceId);
   };
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      onOpenDetail(device.id);
+      onOpenDetail(deviceId);
     }
   };
 
@@ -24,7 +26,7 @@ export default function DeviceListItem({
       elevation={0}
       role="button"
       tabIndex={0}
-      onClick={() => onOpenDetail(device.id)}
+      onClick={() => onOpenDetail(deviceId)}
       onKeyDown={handleKeyDown}
       sx={{
         borderRadius: 3,
@@ -53,7 +55,7 @@ export default function DeviceListItem({
             {device.name}
           </Typography>
           <Typography variant="body2" color="text.secondary" noWrap>
-            {device.groupName}
+            {device.groupName || (device.groups && device.groups[0]) || "Unassigned"}
           </Typography>
         </Box>
 
@@ -71,7 +73,7 @@ export default function DeviceListItem({
             Last seen
           </Typography>
           <Typography variant="body1" noWrap>
-            {device.lastSeenLabel}
+            {device.lastSeenAt ? new Date(device.lastSeenAt).toLocaleString() : 'Never'}
           </Typography>
         </Box>
 
@@ -89,4 +91,3 @@ export default function DeviceListItem({
     </Paper>
   );
 }
-

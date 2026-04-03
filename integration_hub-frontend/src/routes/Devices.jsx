@@ -1,57 +1,59 @@
-import { useState } from "react";
-import { Box, Snackbar, Alert } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Box, Snackbar, Alert, CircularProgress, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DevicesHeader from "../components/device/DevicesHeader.jsx";
 import DeviceList from "../components/device/DeviceList.jsx";
 import AddDeviceModal from "../components/device/AddDeviceModal.jsx";
-
-const MOCK_DEVICES = [
-  {
-    id: "humidity-iot",
-    name: "Humidity IoT",
-    serialNumber: "SN-HUM-00428",
-    groupName: "Forest nodes",
-    lastSeenAt: "2026-02-04T09:30:00Z",
-    lastSeenLabel: "4.2.2026 - 9:30",
-  },
-  {
-    id: "vibration-cnc-1",
-    name: "Vibration meter - CNC 1",
-    serialNumber: "SN-CNC-99107",
-    groupName: "Preemptive maintenance",
-    lastSeenAt: "2026-02-04T09:25:00Z",
-    lastSeenLabel: "4.2.2026 - 9:25",
-  },
-  {
-    id: "greenhouse-temp-7",
-    name: "Greenhouse temp sensor 7",
-    serialNumber: "SN-GH-11842",
-    groupName: "Greenhouse",
-    lastSeenAt: "2026-02-03T16:11:00Z",
-    lastSeenLabel: "3.2.2026 - 16:11",
-  },
-];
+import { deviceApi } from "../api/deviceApi.js";
 
 export default function Devices() {
   const navigate = useNavigate();
-  // Move mock devices to state so we can add to them
-  const [devices, setDevices] = useState(MOCK_DEVICES);
   
+  // State
+  const [devices, setDevices] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Filters & Sorting
   const [sortBy, setSortBy] = useState("name-asc");
   const [groupFilter, setGroupFilter] = useState("all");
   const [searchValue, setSearchValue] = useState("");
   
-  // State for the Add Device Modal
+  // Modals & Notifications
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  // Load devices from backend
+  const fetchDevices = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await deviceApi.list();
+      // Assuming your backend returns { data: [...] }
+      const deviceList = response?.data || response || [];
+      setDevices(deviceList);
+    } catch (err) {
+      console.error("Failed to fetch devices:", err);
+      setError("Failed to load devices. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initial load
+  useEffect(() => {
+    fetchDevices();
+  }, []);
 
   const handleAddDeviceClick = () => {
     setIsAddModalOpen(true);
   };
 
-  const handleDeviceAdded = (newDevice) => {
-    // Add the new device to our state list
-    setDevices((prevDevices) => [newDevice, ...prevDevices]);
+  const handleDeviceAdded = () => {
+    // When a device is successfully added, we re-fetch the entire list from the backend.
+    // This is generally the best practice to ensure our UI is perfectly in sync with 
+    // the database, getting the real MongoDB IDs, timestamps, etc.
+    fetchDevices();
     setSnackbarOpen(true);
   };
 
@@ -63,6 +65,7 @@ export default function Devices() {
   };
 
   const handleOpenDetail = (deviceId) => {
+    // Ensure we are passing the correct MongoDB ID
     navigate(`/devices/${deviceId}`);
   };
 
@@ -70,28 +73,35 @@ export default function Devices() {
     navigate(`/messages?deviceId=${deviceId}`);
   };
 
+  // --- Filtering & Sorting Logic ---
   const normalizedSearch = searchValue.trim().toLowerCase();
 
   const filteredDevices = devices.filter((device) => {
+    // Ensure safe access in case backend properties are null/undefined
+    const groupName = device.groupName || (device.groups && device.groups[0]) || "";
+    
     const inSelectedGroup =
-      groupFilter === "all" || device.groupName.toLowerCase().replace(/\s+/g, "-") === groupFilter;
+      groupFilter === "all" || groupName.toLowerCase().replace(/\s+/g, "-") === groupFilter;
 
     const matchesSearch =
       !normalizedSearch ||
-      device.name.toLowerCase().includes(normalizedSearch) ||
-      device.serialNumber.toLowerCase().includes(normalizedSearch) ||
-      device.groupName.toLowerCase().includes(normalizedSearch);
+      (device.name && device.name.toLowerCase().includes(normalizedSearch)) ||
+      (device.serialNumber && device.serialNumber.toLowerCase().includes(normalizedSearch)) ||
+      groupName.toLowerCase().includes(normalizedSearch);
 
     return inSelectedGroup && matchesSearch;
   });
 
   const sortedDevices = [...filteredDevices].sort((first, second) => {
-    if (sortBy === "name-asc") return first.name.localeCompare(second.name);
-    if (sortBy === "name-desc") return second.name.localeCompare(first.name);
-    if (sortBy === "last-seen-desc") {
-      return new Date(second.lastSeenAt).getTime() - new Date(first.lastSeenAt).getTime();
-    }
-    return new Date(first.lastSeenAt).getTime() - new Date(second.lastSeenAt).getTime();
+    const nameA = first.name || "";
+    const nameB = second.name || "";
+    const timeA = first.lastSeenAt ? new Date(first.lastSeenAt).getTime() : 0;
+    const timeB = second.lastSeenAt ? new Date(second.lastSeenAt).getTime() : 0;
+
+    if (sortBy === "name-asc") return nameA.localeCompare(nameB);
+    if (sortBy === "name-desc") return nameB.localeCompare(nameA);
+    if (sortBy === "last-seen-desc") return timeB - timeA;
+    return timeA - timeB;
   });
 
   return (
@@ -115,11 +125,21 @@ export default function Devices() {
         onAddDevice={handleAddDeviceClick}
       />
 
-      <DeviceList
-        devices={sortedDevices}
-        onOpenDetail={handleOpenDetail}
-        onOpenMessages={handleOpenMessages}
-      />
+      {isLoading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
+          <CircularProgress />
+        </Box>
+      ) : error ? (
+        <Typography color="error" sx={{ mt: 4, textAlign: 'center', fontWeight: 'bold' }}>
+          {error}
+        </Typography>
+      ) : (
+        <DeviceList
+          devices={sortedDevices}
+          onOpenDetail={(deviceId) => handleOpenDetail(deviceId)}
+          onOpenMessages={(deviceId) => handleOpenMessages(deviceId)}
+        />
+      )}
 
       <AddDeviceModal 
         open={isAddModalOpen} 

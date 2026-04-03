@@ -18,7 +18,7 @@ export default function DeviceList({
     <Stack spacing={1.5} sx={{ mt: 2 }}>
       {devices.map((device) => (
         <DeviceListItem
-          key={device.id}
+          key={device._id}
           device={device}
           onOpenDetail={onOpenDetail}
           onOpenMessages={onOpenMessages}
@@ -27,4 +27,3 @@ export default function DeviceList({
     </Stack>
   );
 }
-
