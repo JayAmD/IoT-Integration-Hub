@@ -9,6 +9,7 @@ import errorMiddleware from "./middlewares/error.middleware.js";
 import authRouter from "./routes/auth.routes.js";
 import deviceRouter from "./routes/device.routes.js";
 import endpointRouter from "./routes/endpoint.routes.js";
+import groupRouter from "./routes/group.routes.js";
 import credentialRouter from "./routes/credential.routes.js";
 
 import addMessage from "./controllers/udp-server/addMessage.js";
@@ -26,6 +27,7 @@ app.use(cookieParser());
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/devices", deviceRouter);
+app.use("/api/v1/groups", groupRouter);
 app.use("/api/v1/endpoints", endpointRouter);
 app.use("/api/v1/credentials", credentialRouter)
 

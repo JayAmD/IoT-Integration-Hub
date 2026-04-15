@@ -20,7 +20,7 @@ const deviceSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    groupIds: {
+    groups: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Group",
       default: [],

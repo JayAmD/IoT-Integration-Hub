@@ -9,6 +9,11 @@ const groupSchema = new mongoose.Schema(
       minLength: [1, "Group name must not be empty"],
       maxLength: [255, "Group name must be less than 255 characters long"],
     },
+      ownerId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+      }
   },
   {
     timestamps: true,

@@ -2,7 +2,7 @@ import Device from "../../models/device.model.js";
 
 const getDeviceDetail = async (req, res, next) => {
   try {
-    const device = await Device.findById(req.params.id);
+    const device = await Device.findById(req.params.id).populate("groups", "name");
 
     if (!device) {
       const error = new Error("Device Not Found");
