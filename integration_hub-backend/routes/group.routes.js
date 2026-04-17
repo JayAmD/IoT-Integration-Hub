@@ -19,7 +19,7 @@ groupRouter.get("/:id",  authenticate, getGroupDetail);
 
 groupRouter.post("/",  authenticate, createGroup);
 
-groupRouter.put("/:id",  authenticate, updateGroup);
+groupRouter.patch("/:id",  authenticate, updateGroup);
 
 groupRouter.delete("/:id",  authenticate, deleteGroup);
 

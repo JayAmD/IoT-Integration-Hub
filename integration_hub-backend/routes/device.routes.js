@@ -19,7 +19,7 @@ deviceRouter.get("/:id", validate(deviceGetSchema), authenticate, getDeviceDetai
 
 deviceRouter.post("/", validate(deviceCreateSchema), authenticate, createDevice);
 
-deviceRouter.put("/:id", validate(deviceUpdateSchema), authenticate, updateDevice);
+deviceRouter.patch("/:id", validate(deviceUpdateSchema), authenticate, updateDevice);
 
 deviceRouter.delete("/:id", validate(deviceDeleteSchema), authenticate, deleteDevice);
 

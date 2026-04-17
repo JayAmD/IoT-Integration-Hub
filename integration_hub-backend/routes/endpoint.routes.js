@@ -19,7 +19,7 @@ endpointRouter.get("/", authenticate, listEndpoints);
 
 endpointRouter.get("/:id",  authenticate, getEndpointDetail);
 
-endpointRouter.put("/:id", authenticate, updateEndpoint);
+endpointRouter.patch("/:id", authenticate, updateEndpoint);
 
 endpointRouter.delete("/:id",  authenticate, deleteEndpoint);
 
