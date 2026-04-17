@@ -23,7 +23,7 @@ const client = async (endpoint, { body, ...customConfig } = {}) => {
   const config = {
     ...customConfig, // Spread any extra options (like credentials, mode, etc.)
     method,          // Use our explicitly determined method
-    finalHeaders
+    headers: finalHeaders
   };
 
   // Only attach a body to the config if one was provided
