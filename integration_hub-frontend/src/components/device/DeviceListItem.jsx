@@ -55,7 +55,7 @@ export default function DeviceListItem({
             {device.name}
           </Typography>
           <Typography variant="body2" color="text.secondary" noWrap>
-            {device.groupName || (device.groups && device.groups[0]) || "Unassigned"}
+            {device.groups.map(group => group.name).join(', ')}
           </Typography>
         </Box>
 

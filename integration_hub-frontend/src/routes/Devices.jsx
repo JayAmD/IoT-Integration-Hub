@@ -34,7 +34,7 @@ export default function Devices() {
       setDevices(deviceList);
     } catch (err) {
       console.error("Failed to fetch devices:", err);
-      setError("Failed to load devices. Please try again later.");
+      setError("Error: "+ err.message || "Failed to load devices. Please try again later.");
     } finally {
       setIsLoading(false);
     }

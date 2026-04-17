@@ -23,29 +23,16 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import { deviceApi } from "../api/deviceApi.js";
 
 const MOCK_GROUPS = [
-  'Forest nodes',
-  'Preemptive maintenance',
-  'Greenhouse',
-  'Factory Floor',
-  'Outdoor Sensors',
+  { _id: "69df97eec51520290372c33e", name: 'FOREST nodes' },
+  { _id: "69df9994c51520290372c345", name: 'CNC123' },
+  { _id: "3", name: 'Greenhouse' },
+  { _id: "4", name: 'Factory Floor' },
+  { _id: "5", name: 'Outdoor Sensors' },
 ];
-
-// Mock fetch function to simulate getting device data
-const fetchDeviceData = async (id) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        id: id,
-        name: "Vibration meter device",
-        serialNumber: "SN-123456789",
-        groups: ['Forest nodes', 'Preemptive maintenance'],
-        lastSeenAt: new Date().toISOString(),
-      });
-    }, 600); // simulate network delay
-  });
-};
 
 export default function DeviceDetail() {
   const { deviceId } = useParams();
@@ -56,11 +43,12 @@ export default function DeviceDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // Form State
   const [formData, setFormData] = useState({
     name: '',
-    groups: [],
+    groupIds: [],
   });
 
   // Load device data on mount
@@ -68,11 +56,12 @@ export default function DeviceDetail() {
     const loadDevice = async () => {
       setIsLoading(true);
       try {
-        const data = await fetchDeviceData(deviceId);
+        const response = await deviceApi.getById(deviceId);
+        const data = response.data || response;
         setDevice(data);
         setFormData({
-          name: data.name,
-          groups: data.groups,
+          name: data.name || '',
+          groupIds: data.groups ? data.groups.map(g => g._id) : [],
         });
       } catch (error) {
         console.error("Failed to load device data", error);
@@ -86,8 +75,8 @@ export default function DeviceDetail() {
   const handleEditClick = () => {
     setIsEditMode(true);
     setFormData({
-      name: device.name,
-      groups: device.groups,
+      name: device.name || '',
+      groupIds: device.groups ? device.groups.map(g => g._id) : [],
     });
   };
 
@@ -107,7 +96,7 @@ export default function DeviceDetail() {
     const { target: { value } } = event;
     setFormData(prev => ({
       ...prev,
-      groups: typeof value === 'string' ? value.split(',') : value,
+      groupIds: typeof value === 'string' ? value.split(',') : value,
     }));
   };
 
@@ -116,17 +105,30 @@ export default function DeviceDetail() {
     setIsSaving(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 800)); // Simulate API call
-      setDevice(prev => ({
-        ...prev,
+      const response = await deviceApi.update(deviceId, {
         name: formData.name,
-        groups: formData.groups
-      }));
+        groupIds: formData.groupIds
+      });
+      const updatedData = response.data || response;
+      setDevice(updatedData);
       setIsEditMode(false);
     } catch (error) {
       console.error("Failed to save device", error);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this device?")) {
+      setIsDeleting(true);
+      try {
+        await deviceApi.delete(deviceId);
+        navigate('/devices');
+      } catch (error) {
+        console.error("Failed to delete device", error);
+        setIsDeleting(false);
+      }
     }
   };
 
@@ -186,20 +188,37 @@ export default function DeviceDetail() {
           </Box>
           
           {!isEditMode && (
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<EditOutlinedIcon />}
-              onClick={handleEditClick}
-              sx={{ 
-                borderRadius: 2,
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 2
-              }}
-            >
-              Edit
-            </Button>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<EditOutlinedIcon />}
+                onClick={handleEditClick}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  px: 2
+                }}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<DeleteOutlinedIcon />}
+                onClick={handleDelete}
+                disabled={isDeleting}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  px: 2
+                }}
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </Button>
+            </Box>
           )}
         </Box>
 
@@ -238,29 +257,32 @@ export default function DeviceDetail() {
                   id="groups"
                   name="groups"
                   multiple
-                  value={formData.groups}
+                  value={formData.groupIds}
                   onChange={handleGroupChange}
                   input={<OutlinedInput label="Assigned Groups" sx={{ borderRadius: 2 }} />}
                   renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((value) => (
-                        <Chip
-                          key={value}
-                          label={value}
-                          size="small"
-                          sx={{
-                            backgroundColor: 'rgba(25, 118, 210, 0.08)',
-                            color: 'primary.main',
-                            fontWeight: 'bold',
-                          }}
-                        />
-                      ))}
+                      {selected.map((value) => {
+                        const group = MOCK_GROUPS.find(g => g._id === value) || device.groups?.find(g => g._id === value);
+                        return (
+                          <Chip
+                            key={value}
+                            label={group ? group.name : value}
+                            size="small"
+                            sx={{
+                              backgroundColor: 'rgba(25, 118, 210, 0.08)',
+                              color: 'primary.main',
+                              fontWeight: 'bold',
+                            }}
+                          />
+                        );
+                      })}
                     </Box>
                   )}
                 >
-                  {MOCK_GROUPS.map((name) => (
-                    <MenuItem key={name} value={name}>
-                      {name}
+                  {MOCK_GROUPS.map((group) => (
+                    <MenuItem key={group._id} value={group._id}>
+                      {group.name}
                     </MenuItem>
                   ))}
                 </Select>
@@ -298,7 +320,6 @@ export default function DeviceDetail() {
           /* VIEW MODE */
           <Stack spacing={3}>
 
-
             <Box>
               <Typography variant="caption" color="text.secondary" fontWeight="bold" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 Serial Number
@@ -315,8 +336,8 @@ export default function DeviceDetail() {
                 {device.groups && device.groups.length > 0 ? (
                     device.groups.map(group => (
                         <Chip
-                            key={group}
-                            label={group}
+                            key={group._id}
+                            label={group.name}
                             size="small"
                             sx={{
                               bgcolor: 'grey.100',
@@ -338,18 +359,17 @@ export default function DeviceDetail() {
                 Device ID
               </Typography>
               <Typography variant="body1" sx={{ mt: 0.5, color: 'text.primary', fontFamily: 'monospace' }}>
-                {device.id}
+                {device._id}
               </Typography>
             </Box>
             <Box>
               <Typography variant="caption" color="text.secondary" fontWeight="bold" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                Last Seen
+                Created at
               </Typography>
               <Typography variant="body1" sx={{ mt: 0.5, color: 'text.primary' }}>
-                {new Date(device.lastSeenAt).toLocaleString()}
+                {device.createdAt ? new Date(device.createdAt).toLocaleString() : 'N/A'}
               </Typography>
             </Box>
-
 
           </Stack>
         )}
