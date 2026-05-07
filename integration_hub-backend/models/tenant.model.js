@@ -24,9 +24,9 @@ const tenantSchema = new mongoose.Schema(
         },
         role: {
           type: String,
-          enum: ["owner", "admin", "member"],
+          enum: ["owner", "admin", "viewer"],
           required: true,
-          default: "member",
+          default: "viewer",
         },
         _id: false, // Don't create a separate _id for each member
       },

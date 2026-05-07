@@ -7,6 +7,7 @@ import { PORT, CORS_ORIGIN } from "./config/env.js";
 import connectToDatabase from "./database/mongodb.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
 import authRouter from "./routes/auth.routes.js";
+import tenantRouter from "./routes/tenant.routes.js";
 import deviceRouter from "./routes/device.routes.js";
 import endpointRouter from "./routes/endpoint.routes.js";
 import groupRouter from "./routes/group.routes.js";
@@ -25,8 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/devices", deviceRouter);
+app.use("/api/v1/auth", authRouter);app.use("/api/v1/tenants", tenantRouter);app.use("/api/v1/devices", deviceRouter);
 app.use("/api/v1/groups", groupRouter);
 app.use("/api/v1/endpoints", endpointRouter);
 app.use("/api/v1/credentials", credentialRouter)
