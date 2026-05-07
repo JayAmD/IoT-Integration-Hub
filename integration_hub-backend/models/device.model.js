@@ -15,6 +15,11 @@ const deviceSchema = new mongoose.Schema(
       unique: true,
       immutable: true,
     },
+    claimToken: {
+      type: String,
+      trim: true,
+      required: [true, "Claim token is required"],
+    },
     tenantId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Tenant",

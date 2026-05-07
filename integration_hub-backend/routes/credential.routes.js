@@ -8,7 +8,7 @@ import authorizeTenant from "../middlewares/tenant.middleware.js";
 
 import createCredential from "../controllers/credential/create.js";
 
-const credentialRouter = Router();
+const credentialRouter = Router({ mergeParams: true });
 
 credentialRouter.post("/", authenticate, authorizeTenant(["owner", "admin"]), createCredential);
 

@@ -14,6 +14,10 @@ export const deviceCreateSchema = z.object({
     serialNumber: z
       .number(),
 
+    claimToken: z
+      .string()
+      .trim(),
+
     groupIds: z
       .array(
         z
@@ -66,6 +70,10 @@ export const deviceUpdateSchema = z.object({
           ),
       )
       .optional(),
+    claimToken: z
+      .string()
+      .trim()
+     
   }),
 });
 

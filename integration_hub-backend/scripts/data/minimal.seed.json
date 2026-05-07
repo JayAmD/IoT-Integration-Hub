@@ -1,0 +1,45 @@
+{
+  "users": [
+    {
+      "email": "owner.seed@example.com",
+      "password": "SeedPass123"
+    },
+    {
+      "email": "admin.seed@example.com",
+      "password": "SeedPass456"
+    }
+  ],
+  "tenant": {
+    "name": "Seed Tenant",
+    "description": "Tenant created by API seed script"
+  },
+  "member": {
+    "email": "admin.seed@example.com",
+    "role": "admin"
+  },
+  "group": {
+    "name": "Seed Group"
+  },
+  "credential": {
+    "name": "Seed Credential",
+    "provider": "custom",
+    "secret": {
+      "apiKey": "seed-api-key",
+      "apiSecret": "seed-api-secret"
+    }
+  },
+  "device": {
+    "name": "Seed Device",
+    "serialNumber": 700001,
+    "claimToken": "seed-claim-token"
+  },
+  "endpoint": {
+    "name": "Seed Endpoint",
+    "url": "https://example.com/iot-ingest",
+    "method": "POST",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "mappingRules": "{\"temperature\":\"payload.temp\"}"
+  }
+}

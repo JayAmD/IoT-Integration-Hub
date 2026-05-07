@@ -12,7 +12,7 @@ import getGroupDetail from "../controllers/group/getDetail.js";
 import deleteGroup from "../controllers/group/delete.js";
 import updateGroup from "../controllers/group/update.js";
 
-const groupRouter = Router();
+const groupRouter = Router({ mergeParams: true });
 
 groupRouter.get("/", authenticate, authorizeTenant(["owner", "admin", "viewer"]), listGroups);
 

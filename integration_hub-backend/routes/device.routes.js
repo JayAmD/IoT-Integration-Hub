@@ -12,7 +12,7 @@ import getDeviceDetail from "../controllers/device/getDetail.js";
 import deleteDevice from "../controllers/device/delete.js";
 import updateDevice from "../controllers/device/update.js";
 
-const deviceRouter = Router();
+const deviceRouter = Router({ mergeParams: true });
 
 deviceRouter.get("/", validate(deviceListSchema), authenticate, authorizeTenant(["owner", "admin", "viewer"]), listDevices);
 

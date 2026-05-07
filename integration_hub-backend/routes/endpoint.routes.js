@@ -12,7 +12,7 @@ import getEndpointDetail from "../controllers/endpoint/getDetail.js";
 import deleteEndpoint from "../controllers/endpoint/delete.js";
 import updateEndpoint from "../controllers/endpoint/update.js";
 
-const endpointRouter = Router();
+const endpointRouter = Router({ mergeParams: true });
 
 endpointRouter.post("/", authenticate, authorizeTenant(["owner", "admin"]), createEndpoint);
 
