@@ -4,7 +4,7 @@ const createEndpoint = async (req, res, next) => {
   try {
     const endpoint = await Endpoint.create({
       ...req.body,
-      ownerId: req.user._id
+      tenantId: req.currentTenant._id
     });
     res.status(201).json({ success: true, data: endpoint });
   } catch (e) {

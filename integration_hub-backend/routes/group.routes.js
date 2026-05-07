@@ -4,6 +4,7 @@ import { Router } from "express";
 //import { groupCreateSchema, groupGetSchema, groupListSchema, groupUpdateSchema, groupDeleteSchema } from "../validation/group.schemas.js";
 // TODO add validate
 import authenticate from "../middlewares/auth.middleware.js";
+import authorizeTenant from "../middlewares/tenant.middleware.js";
 
 import createGroup from "../controllers/group/create.js";
 import listGroups from "../controllers/group/list.js";
@@ -13,14 +14,14 @@ import updateGroup from "../controllers/group/update.js";
 
 const groupRouter = Router();
 
-groupRouter.get("/",  authenticate, listGroups);
+groupRouter.get("/", authenticate, authorizeTenant(["owner", "admin", "viewer"]), listGroups);
 
-groupRouter.get("/:id",  authenticate, getGroupDetail);
+groupRouter.get("/:id", authenticate, authorizeTenant(["owner", "admin", "viewer"]), getGroupDetail);
 
-groupRouter.post("/",  authenticate, createGroup);
+groupRouter.post("/", authenticate, authorizeTenant(["owner", "admin"]), createGroup);
 
-groupRouter.patch("/:id",  authenticate, updateGroup);
+groupRouter.patch("/:id", authenticate, authorizeTenant(["owner", "admin"]), updateGroup);
 
-groupRouter.delete("/:id",  authenticate, deleteGroup);
+groupRouter.delete("/:id", authenticate, authorizeTenant(["owner", "admin"]), deleteGroup);
 
 export default groupRouter;

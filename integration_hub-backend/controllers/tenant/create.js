@@ -6,7 +6,7 @@ const createTenant = async (req, res, next) => {
 
   try {
     const { name, description } = req.body;
-    const userId = req.user._id;
+    const userId = req.currentUser._id;
 
     // Start a session for transaction
     session = await mongoose.startSession();

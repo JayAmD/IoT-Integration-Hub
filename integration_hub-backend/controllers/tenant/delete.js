@@ -11,35 +11,11 @@ const deleteTenant = async (req, res, next) => {
   let session = null;
 
   try {
-    const { tenantId } = req.params;
-    const currentUserId = req.user._id;
-
-    if (!mongoose.Types.ObjectId.isValid(tenantId)) {
-      const error = new Error("Invalid tenant ID");
-      error.statusCode = 400;
-      throw error;
-    }
+    // authorizeTenant middleware already verified owner role
+    const tenantId = req.currentTenant._id;
 
     session = await mongoose.startSession();
     session.startTransaction();
-
-    const tenant = await Tenant.findById(tenantId).session(session);
-
-    if (!tenant) {
-      const error = new Error("Tenant not found");
-      error.statusCode = 404;
-      throw error;
-    }
-
-    const currentMember = tenant.members.find((member) =>
-      member.userId.equals(currentUserId)
-    );
-
-    if (!currentMember || currentMember.role !== "owner") {
-      const error = new Error("Unauthorized: only owner can delete the tenant");
-      error.statusCode = 403;
-      throw error;
-    }
 
     const deviceIds = await Device.find({ tenantId }).distinct("_id").session(session);
 

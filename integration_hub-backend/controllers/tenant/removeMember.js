@@ -1,45 +1,20 @@
 import mongoose from "mongoose";
-import Tenant from "../../models/tenant.model.js";
 
 const removeMember = async (req, res, next) => {
   try {
-    const { tenantId, userId } = req.params;
-    const currentUserId = req.user._id;
+    const { userId } = req.params;
 
-    // Validate IDs
-    if (!mongoose.Types.ObjectId.isValid(tenantId)) {
-      const error = new Error("Invalid tenant ID");
-      error.statusCode = 400;
-      throw error;
-    }
-
+    // Validate user ID
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       const error = new Error("Invalid user ID");
       error.statusCode = 400;
       throw error;
     }
 
-    const tenant = await Tenant.findById(tenantId);
-
-    if (!tenant) {
-      const error = new Error("Tenant not found");
-      error.statusCode = 404;
-      throw error;
-    }
-
-    // Check if current user is owner or admin
-    const currentMember = tenant.members.find((m) =>
-      m.userId.equals(currentUserId)
-    );
-
-    if (!currentMember || !["owner", "admin"].includes(currentMember.role)) {
-      const error = new Error("Unauthorized: only owner/admin can remove members");
-      error.statusCode = 403;
-      throw error;
-    }
+    // authorizeTenant middleware already verified role (owner/admin)
 
     // Prevent removing the only owner
-    const memberToRemove = tenant.members.find((m) =>
+    const memberToRemove = req.currentTenant.members.find((m) =>
       m.userId.equals(userId)
     );
 
@@ -50,7 +25,7 @@ const removeMember = async (req, res, next) => {
     }
 
     if (memberToRemove.role === "owner") {
-      const ownerCount = tenant.members.filter((m) => m.role === "owner").length;
+      const ownerCount = req.currentTenant.members.filter((m) => m.role === "owner").length;
       if (ownerCount === 1) {
         const error = new Error(
           "Cannot remove the only owner. Transfer ownership first."
@@ -61,16 +36,16 @@ const removeMember = async (req, res, next) => {
     }
 
     // Remove member
-    tenant.members = tenant.members.filter((m) => !m.userId.equals(userId));
+    req.currentTenant.members = req.currentTenant.members.filter((m) => !m.userId.equals(userId));
 
-    await tenant.save();
+    await req.currentTenant.save();
 
     // Populate and return updated tenant
-    await tenant.populate("members.userId", "email");
+    await req.currentTenant.populate("members.userId", "email");
 
     res.status(200).json({
       success: true,
-      data: tenant,
+      data: req.currentTenant,
     });
   } catch (e) {
     next(e);

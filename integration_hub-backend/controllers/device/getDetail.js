@@ -2,17 +2,14 @@ import Device from "../../models/device.model.js";
 
 const getDeviceDetail = async (req, res, next) => {
   try {
-    const device = await Device.findById(req.params.id).populate("groupIds", "name");
+    const device = await Device.findOne({
+      _id: req.params.id,
+      tenantId: req.currentTenant._id,
+    }).populate("groupIds", "name");
 
     if (!device) {
       const error = new Error("Device Not Found");
       error.statusCode = 404;
-      throw error;
-    }
-
-    if (!device.ownerId.equals(req.user._id)) {
-      const error = new Error("Unauthorized");
-      error.statusCode = 403;
       throw error;
     }
 

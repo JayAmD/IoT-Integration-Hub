@@ -2,7 +2,7 @@ import Device from "../../models/device.model.js";
 
 const listDevices = async (req, res, next) => {
   try {
-    const devices = await Device.find({ ownerId: req.user._id }).populate("groupIds", "name");
+    const devices = await Device.find({ tenantId: req.currentTenant._id }).populate("groupIds", "name");
 
     let formatedDevices = []
 

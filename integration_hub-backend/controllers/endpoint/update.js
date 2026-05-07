@@ -2,7 +2,10 @@ import Endpoint from "../../models/endpoint.model.js";
 
 const updateEndpoint = async (req, res, next) => {
   try {
-    const endpoint = await Endpoint.findById(req.params.id);
+    const endpoint = await Endpoint.findOne({
+      _id: req.params.id,
+      tenantId: req.currentTenant._id,
+    });
 
     if (!endpoint) {
       const error = new Error("Endpoint Not Found");
@@ -10,14 +13,8 @@ const updateEndpoint = async (req, res, next) => {
       throw error;
     }
 
-    if (!endpoint.ownerId.equals(req.user._id)) {
-      const error = new Error("Unauthorized");
-      error.statusCode = 403;
-      throw error;
-    }
-
-    const updatedEndpoint = await Endpoint.findByIdAndUpdate(
-        req.params.id,
+    const updatedEndpoint = await Endpoint.findOneAndUpdate(
+        { _id: req.params.id, tenantId: req.currentTenant._id },
         req.body,
         { returnDocument: 'after', runValidators: true }
     );

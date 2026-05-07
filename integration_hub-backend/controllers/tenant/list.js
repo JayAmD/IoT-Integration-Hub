@@ -2,7 +2,7 @@ import Tenant from "../../models/tenant.model.js";
 
 const listTenants = async (req, res, next) => {
   try {
-    const userId = req.user._id;
+    const userId = req.currentUser._id;
 
     // Find all tenants where the user is a member
     const tenants = await Tenant.find({

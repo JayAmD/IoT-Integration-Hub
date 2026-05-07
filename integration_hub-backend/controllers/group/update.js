@@ -2,7 +2,10 @@ import Group from "../../models/group.model.js";
 
 const updateGroup = async (req, res, next) => {
   try {
-    const group = await Group.findById(req.params.id);
+    const group = await Group.findOne({
+      _id: req.params.id,
+      tenantId: req.currentTenant._id,
+    });
 
     if (!group) {
       const error = new Error("Group Not Found");
@@ -10,14 +13,8 @@ const updateGroup = async (req, res, next) => {
       throw error;
     }
 
-    if (!group.ownerId.equals(req.user._id)) {
-      const error = new Error("Unauthorized");
-      error.statusCode = 403;
-      throw error;
-    }
-
-    const updatedGroup = await Group.findByIdAndUpdate(
-        req.params.id,
+    const updatedGroup = await Group.findOneAndUpdate(
+        { _id: req.params.id, tenantId: req.currentTenant._id },
         req.body,
         { returnDocument: 'after', runValidators: true }
     );

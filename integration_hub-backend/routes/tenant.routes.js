@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import authenticate from "../middlewares/auth.middleware.js";
+import authorizeTenant from "../middlewares/tenant.middleware.js";
 
 import createTenant from "../controllers/tenant/create.js";
 import listTenants from "../controllers/tenant/list.js";
@@ -19,18 +20,18 @@ tenantRouter.get("/", authenticate, listTenants);
 tenantRouter.post("/", authenticate, createTenant);
 
 // Get tenant detail
-tenantRouter.get("/:tenantId", authenticate, getTenantDetail);
+tenantRouter.get("/:tenantId", authenticate, authorizeTenant(["owner", "admin", "viewer"]), getTenantDetail);
 
 // Delete tenant
-tenantRouter.delete("/:tenantId", authenticate, deleteTenant);
+tenantRouter.delete("/:tenantId", authenticate, authorizeTenant(["owner"]), deleteTenant);
 
 // Add member to tenant
-tenantRouter.post("/:tenantId/members", authenticate, addMember);
+tenantRouter.post("/:tenantId/members", authenticate, authorizeTenant(["owner", "admin"]), addMember);
 
 // Remove member from tenant
-tenantRouter.delete("/:tenantId/members/:userId", authenticate, removeMember);
+tenantRouter.delete("/:tenantId/members/:userId", authenticate, authorizeTenant(["owner", "admin"]), removeMember);
 
 // Update member role
-tenantRouter.patch("/:tenantId/members/:userId", authenticate, updateMemberRole);
+tenantRouter.patch("/:tenantId/members/:userId", authenticate, authorizeTenant(["owner"]), updateMemberRole);
 
 export default tenantRouter;

@@ -11,7 +11,7 @@ const createCredential = async (req, res, next) => {
             name,
             provider,
             encryptedData,
-            ownerId: req.user._id
+            tenantId: req.currentTenant._id
         });
 
         const safeCredential = credential.toObject()

@@ -2,7 +2,10 @@ import Device from "../../models/device.model.js";
 
 const updateDevice = async (req, res, next) => {
   try {
-    const device = await Device.findById(req.params.id);
+    const device = await Device.findOne({
+      _id: req.params.id,
+      tenantId: req.currentTenant._id,
+    });
 
     if (!device) {
       const error = new Error("Device Not Found");
@@ -10,14 +13,8 @@ const updateDevice = async (req, res, next) => {
       throw error;
     }
 
-    if (!device.ownerId.equals(req.user._id)) {
-      const error = new Error("Unauthorized");
-      error.statusCode = 403;
-      throw error;
-    }
-
-    const updatedDevice = await Device.findByIdAndUpdate(
-        req.params.id,
+    const updatedDevice = await Device.findOneAndUpdate(
+        { _id: req.params.id, tenantId: req.currentTenant._id },
         req.body,
         { returnDocument: 'after', runValidators: true }
     );

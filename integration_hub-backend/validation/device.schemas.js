@@ -1,6 +1,9 @@
 import z from "zod";
 
 export const deviceCreateSchema = z.object({
+  params: z.object({
+    tenantId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid tenant ID"),
+  }),
   body: z.object({
     name: z
       .string()
@@ -25,6 +28,9 @@ export const deviceCreateSchema = z.object({
   });
   
   export const deviceListSchema = z.object({
+    params: z.object({
+      tenantId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid tenant ID"),
+    }),
     query: z.object({
       sortBy: z.enum(["name", "lastSeen"]).optional(),
       order: z.enum(["asc", "desc"]).optional(),
@@ -33,12 +39,14 @@ export const deviceCreateSchema = z.object({
 
 export const deviceGetSchema = z.object({
   params: z.object({
+    tenantId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid tenant ID"),
     id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid device ID"),
   }),
 });
 
 export const deviceUpdateSchema = z.object({
   params: z.object({
+    tenantId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid tenant ID"),
     id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid device ID"),
   }),
   body: z.object({
@@ -63,6 +71,7 @@ export const deviceUpdateSchema = z.object({
 
 export const deviceDeleteSchema = z.object({
   params: z.object({
+    tenantId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid tenant ID"),
     id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid device ID"),
   }),
 });

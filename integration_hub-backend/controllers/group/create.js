@@ -4,7 +4,7 @@ const createGroup = async (req, res, next) => {
   try {
     const group = await Group.create({
       ...req.body,
-      ownerId: req.user._id
+      tenantId: req.currentTenant._id
     });
     res.status(201).json({ success: true, data: group });
   } catch (e) {
