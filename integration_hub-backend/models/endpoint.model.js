@@ -9,6 +9,11 @@ const endpointSchema = new mongoose.Schema(
             minLength: [1, "Endpoint name must not be empty"],
             maxLength: [255, "Endpoint name must be less than 255 characters long"],
         },
+        groupIds: {
+            type: [mongoose.Schema.Types.ObjectId],
+            ref: "Group",
+            default: [],
+        },
         url: {
             type: String,
             required: true,

@@ -1,13 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 
-const filePath = path.join(__dirname, 'data.bin');
+const filePath = path.join(__dirname, 'dataWHeader6.5.bin');
 
 function decodeData() {
     try {
         // Read the raw binary data
         const buffer = fs.readFileSync(filePath);
-        
+
         console.log("===============================");
         console.log(`Read ${buffer.length} bytes from data.bin`);
         console.log("===============================\n");
@@ -32,7 +32,7 @@ function decodeData() {
             console.log("Could not parse as JSON. The data might not be JSON, or it might be corrupted.");
             console.log("Error details:", e.message);
         }
-        
+
         // Check if it might have been corrupted by a text editor (UTF-8 replacement characters)
         if (buffer.indexOf(Buffer.from([0xef, 0xbf, 0xbd])) !== -1) {
             console.warn("\n===============================");
