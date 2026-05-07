@@ -15,9 +15,9 @@ const deviceSchema = new mongoose.Schema(
       unique: true,
       immutable: true,
     },
-    ownerId: {
+    tenantId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Tenant",
       required: true,
     },
     groupIds: {

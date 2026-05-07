@@ -25,9 +25,9 @@ const credentialSchema = new mongoose.Schema(
             type: Number,
             default: 1,
         },
-        ownerId: {
+        tenantId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
+            ref: 'Tenant',
             required: true,
         },
     },

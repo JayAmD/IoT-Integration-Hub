@@ -33,9 +33,9 @@ const endpointSchema = new mongoose.Schema(
             {
                 type: String,
             },
-        ownerId: {
+        tenantId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
+            ref: 'Tenant',
             required: true,
         }
     }, {timestamps: true}
