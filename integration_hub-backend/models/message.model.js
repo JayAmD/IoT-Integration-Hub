@@ -7,12 +7,17 @@ const messageSchema = new mongoose.Schema(
             ref: 'Device',
             required: true,
         },
+        tenantId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Tenant',
+            required: true,
+        },
         serialNumber: {
             type: Number,
             required: true
         },
         receivedAt: {
-            type: Date,
+            type: Date, // The actual time from the Parser Server
             required: true
         },
         data: {

@@ -15,6 +15,8 @@ import credentialRouter from "./routes/credential.routes.js";
 
 import addMessage from "./controllers/udp-server/addMessage.js";
 
+import { startIngestionConsumer } from "./services/messageIngestion.service.js";
+
 const app = express();
 
 app.use(cors({
@@ -41,6 +43,9 @@ app.listen(PORT, async () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 
   await connectToDatabase();
+  
+  // Start RabbitMQ Ingestion Consumer
+  await startIngestionConsumer();
 });
 
 export default app;
