@@ -7,14 +7,31 @@ const messageSchema = new mongoose.Schema(
             ref: 'Device',
             required: true,
         },
-        isSend:{
-            type: Boolean,
-            required: true,
+        serialNumber: {
+            type: Number,
+            required: true
         },
-        payload: {
-            type: Object,
+        receivedAt: {
+            type: Date,
+            required: true
+        },
+        data: {
+            type: mongoose.Schema.Types.Mixed,
+            required: true
+        },
+        status: {
+            type: String,
+            enum: ['pending', 'delivered', 'failed'],
+            default: 'pending'
+        },
+        deliveryAttempts: {
+            type: Number,
+            default: 0
+        },
+        lastError: {
+            type: String
         }
-    }, {timestamps: true}
+    }, { timestamps: true }
 )
 
 const Message = mongoose.model('Message', messageSchema);
