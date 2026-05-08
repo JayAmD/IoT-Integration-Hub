@@ -19,22 +19,35 @@ export const AuthProvider = ({ children }) => {
 
     const activeTenant = tenants.find((tenant) => tenant._id === activeTenantId) || null;
 
+    // Bootstrap on mount if logged in
+    // This ensures that on page refresh, we immediately fetch the user's tenants
+    // so ProtectedRoute can verify the URL and Sidebar can show tenant info.
+    React.useEffect(() => {
+        if (token) {
+            bootstrapTenants();
+        }
+    }, [token]);
+
     const setActiveTenantId = (tenantId) => {
         if (tenantId) {
             localStorage.setItem('activeTenantId', tenantId);
             setActiveTenantIdState(tenantId);
-            return;
+        } else {
+            localStorage.removeItem('activeTenantId');
+            setActiveTenantIdState(null);
         }
-
-        localStorage.removeItem('activeTenantId');
-        setActiveTenantIdState(null);
     };
 
     const bootstrapTenants = async () => {
-        const response = await tenantApi.list();
-        const tenantList = response?.data || response || [];
-        setTenants(tenantList);
-        return tenantList;
+        try {
+            const response = await tenantApi.list();
+            const tenantList = response?.data || response || [];
+            setTenants(tenantList);
+            return tenantList;
+        } catch (err) {
+            console.error("Failed to bootstrap tenants:", err);
+            return [];
+        }
     };
 
     // Login handler
@@ -49,36 +62,26 @@ export const AuthProvider = ({ children }) => {
 
         const tenantList = await bootstrapTenants();
         const persistedTenantId = localStorage.getItem('activeTenantId');
-        const validPersistedTenant = persistedTenantId
-            ? tenantList.find((tenant) => tenant._id === persistedTenantId)
-            : null;
+        
+        // Find if we have a valid tenant to jump into
+        const validTenant = tenantList.find(t => t._id === persistedTenantId) || tenantList[0];
 
-        if (validPersistedTenant) {
-            setActiveTenantId(validPersistedTenant._id);
-            navigate('/devices');
-            return;
+        if (validTenant) {
+            setActiveTenantId(validTenant._id);
+            navigate(`/tenants/${validTenant._id}/devices`);
+        } else {
+            navigate('/tenants');
         }
-
-        if (tenantList.length === 1) {
-            setActiveTenantId(tenantList[0]._id);
-            navigate('/devices');
-            return;
-        }
-
-        setActiveTenantId(null);
-        navigate('/tenants');
     };
 
     // Logout handler
     const logout = () => {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('authUser');
-        localStorage.removeItem('activeTenantId');
+        localStorage.clear(); // Clear everything
         setToken(null);
         setUser(null);
         setTenants([]);
         setActiveTenantIdState(null);
-        navigate('/login'); // Redirect after logout
+        navigate('/login');
     };
 
     // The value provided to consuming components
@@ -101,7 +104,7 @@ export const AuthProvider = ({ children }) => {
 // 3. Create a custom hook for easy consumption
 export const useAuthContext = () => {
     const context = useContext(AuthContext);
-    if (context === undefined) {
+    if (!context) {
         throw new Error('useAuthContext must be used within an AuthProvider');
     }
     return context;

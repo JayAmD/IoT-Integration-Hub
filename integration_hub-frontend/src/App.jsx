@@ -1,7 +1,7 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
 
-import { AuthProvider } from "./context/AuthContext.jsx";
+import { AuthProvider, useAuthContext } from "./context/AuthContext.jsx";
 import { GroupProvider } from "./context/GroupContext.jsx";
 import { TenantProvider } from "./context/TenantContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -15,6 +15,18 @@ import Tenants from "./routes/Tenants.jsx";
 import LoginPage from "./routes/LoginPage.jsx";
 import SignupPage from "./routes/SignupPage.jsx";
 
+// Component to handle root redirect based on auth/tenant state
+const RootRedirect = () => {
+  const { isLoggedIn, activeTenantId, tenants } = useAuthContext();
+  
+  if (!isLoggedIn) return <Navigate to="/login" replace />;
+  
+  const targetId = activeTenantId || (tenants.length > 0 ? tenants[0]._id : null);
+  
+  if (targetId) return <Navigate to={`/tenants/${targetId}/devices`} replace />;
+  return <Navigate to="/tenants" replace />;
+};
+
 function App() {
   return (
     <Box>
@@ -27,25 +39,29 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
 
-                {/* Tenant Management — auth required, no active tenant needed */}
+                {/* Root Path Handler */}
+                <Route path="/" element={<RootRedirect />} />
+
+                {/* Global Management — auth required, no tenant context in URL */}
                 <Route element={<ProtectedRoute requireTenant={false} />}>
                   <Route element={<Layout />}>
                     <Route path="/tenants" element={<Tenants />} />
                   </Route>
                 </Route>
 
-                {/* Protected Routes */}
-                <Route element={<ProtectedRoute requireTenant />}>
+                {/* Tenant-Specific Routes — /tenants/:tenantId/... */}
+                <Route path="/tenants/:tenantId" element={<ProtectedRoute requireTenant />}>
                   <Route element={<Layout />}>
-                    <Route path="/devices" element={<Devices />} />
-                    <Route path="/devices/:deviceId" element={<DeviceDetail />} />
-                    <Route path="/messages" element={<Messages />} />
-                    <Route path="/groups" element={<Groups />} />
-
-                    <Route path={"/"} element={<Navigate to={"/devices"} replace />} />
-                    <Route path={"*"} element={<header>Page Not Found</header>} />
+                    <Route index element={<Navigate to="devices" replace />} />
+                    <Route path="devices" element={<Devices />} />
+                    <Route path="devices/:deviceId" element={<DeviceDetail />} />
+                    <Route path="messages" element={<Messages />} />
+                    <Route path="groups" element={<Groups />} />
                   </Route>
                 </Route>
+
+                {/* 404 */}
+                <Route path="*" element={<Box sx={{ p: 4 }}><header>Page Not Found</header></Box>} />
               </Routes>
             </GroupProvider>
           </TenantProvider>

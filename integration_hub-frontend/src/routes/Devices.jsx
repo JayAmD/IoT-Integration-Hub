@@ -72,11 +72,11 @@ export default function Devices() {
 
   const handleOpenDetail = (deviceId) => {
     // Ensure we are passing the correct MongoDB ID
-    navigate(`/devices/${deviceId}`);
+    navigate(`/tenants/${activeTenantId}/devices/${deviceId}`);
   };
 
   const handleOpenMessages = (deviceId) => {
-    navigate(`/messages?deviceId=${deviceId}`);
+    navigate(`/tenants/${activeTenantId}/messages?deviceId=${deviceId}`);
   };
 
   // --- Filtering & Sorting Logic ---

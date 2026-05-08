@@ -68,7 +68,7 @@ export default function Tenants() {
     const handleSelectTenant = (tenantId) => {
         setActiveTenantId(tenantId);
         showSnackbar('Tenant selected successfully!');
-        navigate('/devices');
+        navigate(`/tenants/${tenantId}/devices`);
     };
 
     // --- TENANT HANDLERS ---

@@ -119,7 +119,7 @@ export default function DeviceDetail() {
       setIsDeleting(true);
       try {
         await deviceApi.delete(activeTenantId, deviceId);
-        navigate('/devices');
+        navigate(`/tenants/${activeTenantId}/devices`);
       } catch (error) {
         console.error("Failed to delete device", error);
         setIsDeleting(false);
@@ -148,7 +148,7 @@ export default function DeviceDetail() {
       
       <DeviceDetailHeader 
         deviceName={device.name} 
-        onBack={() => navigate('/devices')} 
+        onBack={() => navigate(`/tenants/${activeTenantId}/devices`)} 
       />
 
       <DeviceDetailCard
