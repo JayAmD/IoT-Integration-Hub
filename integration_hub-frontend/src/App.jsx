@@ -1,8 +1,9 @@
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Box } from "@mui/material";
 
 import { AuthProvider, useAuthContext } from "./context/AuthContext.jsx";
 import { GroupProvider } from "./context/GroupContext.jsx";
+import { MessageProvider } from "./context/MessageContext.jsx";
 import { TenantProvider } from "./context/TenantContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -33,37 +34,39 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <TenantProvider>
-            <GroupProvider>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
+            <MessageProvider>
+              <GroupProvider>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignupPage />} />
 
-                {/* Root Path Handler */}
-                <Route path="/" element={<RootRedirect />} />
+                  {/* Root Path Handler */}
+                  <Route path="/" element={<RootRedirect />} />
 
-                {/* Global Management — auth required, no tenant context in URL */}
-                <Route element={<ProtectedRoute requireTenant={false} />}>
-                  <Route element={<Layout />}>
-                    <Route path="/tenants" element={<Tenants />} />
+                  {/* Global Management — auth required, no tenant context in URL */}
+                  <Route element={<ProtectedRoute requireTenant={false} />}>
+                    <Route element={<Layout />}>
+                      <Route path="/tenants" element={<Tenants />} />
+                    </Route>
                   </Route>
-                </Route>
 
-                {/* Tenant-Specific Routes — /tenants/:tenantId/... */}
-                <Route path="/tenants/:tenantId" element={<ProtectedRoute requireTenant />}>
-                  <Route element={<Layout />}>
-                    <Route index element={<Navigate to="devices" replace />} />
-                    <Route path="devices" element={<Devices />} />
-                    <Route path="devices/:deviceId" element={<DeviceDetail />} />
-                    <Route path="messages" element={<Messages />} />
-                    <Route path="groups" element={<Groups />} />
+                  {/* Tenant-Specific Routes — /tenants/:tenantId/... */}
+                  <Route path="/tenants/:tenantId" element={<ProtectedRoute requireTenant />}>
+                    <Route element={<Layout />}>
+                      <Route index element={<Navigate to="devices" replace />} />
+                      <Route path="devices" element={<Devices />} />
+                      <Route path="devices/:deviceId" element={<DeviceDetail />} />
+                      <Route path="messages" element={<Messages />} />
+                      <Route path="groups" element={<Groups />} />
+                    </Route>
                   </Route>
-                </Route>
 
-                {/* 404 */}
-                <Route path="*" element={<Box sx={{ p: 4 }}><header>Page Not Found</header></Box>} />
-              </Routes>
-            </GroupProvider>
+                  {/* 404 */}
+                  <Route path="*" element={<Box sx={{ p: 4 }}><header>Page Not Found</header></Box>} />
+                </Routes>
+              </GroupProvider>
+            </MessageProvider>
           </TenantProvider>
         </AuthProvider>
       </BrowserRouter>

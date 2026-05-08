@@ -149,6 +149,7 @@ export default function DeviceDetail() {
       <DeviceDetailHeader 
         deviceName={device.name} 
         onBack={() => navigate(`/tenants/${activeTenantId}/devices`)} 
+        onViewMessages={() => navigate(`/tenants/${activeTenantId}/messages?deviceId=${device._id}`)}
       />
 
       <DeviceDetailCard

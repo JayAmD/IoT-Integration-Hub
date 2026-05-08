@@ -20,6 +20,8 @@ import {
   Toolbar,
 } from "@mui/material";
 
+import MessageIcon from "@mui/icons-material/Message";
+
 const Sidebar = () => {
   const { open, toggleOpen } = useContext(SidebarContext);
   const { activeTenantId } = useAuthContext();
@@ -30,6 +32,7 @@ const Sidebar = () => {
   const menuItems = [
     { label: "Devices", icon: <DashboardIcon />, path: `/tenants/${activeTenantId}/devices` },
     { label: "Groups", icon: <GroupsIcon />, path: `/tenants/${activeTenantId}/groups` },
+    { label: "Messages", icon: <MessageIcon />, path: `/tenants/${activeTenantId}/messages` },
     { label: "Tenants", icon: <BusinessIcon />, path: "/tenants" },
     { label: "Analytics", icon: <AnalyticsIcon />, path: `/tenants/${activeTenantId}/analytics` },
     { label: "Settings", icon: <SettingsIcon />, path: `/tenants/${activeTenantId}/settings` },
