@@ -1,7 +1,11 @@
-import React from 'react';
-import { Box, Chip, Stack, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Chip, Stack, Typography, IconButton } from '@mui/material';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 
 export default function DeviceView({ device }) {
+  const [showToken, setShowToken] = useState(false);
+
   return (
     <Stack spacing={3}>
       <Box>
@@ -11,6 +15,33 @@ export default function DeviceView({ device }) {
         <Typography variant="body1" sx={{ mt: 0.5, color: 'text.primary' }}>
           {device.serialNumber}
         </Typography>
+      </Box>
+
+      <Box>
+        <Typography variant="caption" color="text.secondary" fontWeight="bold" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          Claim Token
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              color: 'text.primary', 
+              fontFamily: 'monospace',
+              filter: showToken ? 'none' : 'blur(4px)',
+              transition: 'filter 0.2s ease',
+              userSelect: showToken ? 'text' : 'none'
+            }}
+          >
+            {device.claimToken}
+          </Typography>
+          <IconButton 
+            size="small" 
+            onClick={() => setShowToken(!showToken)}
+            sx={{ color: 'text.secondary' }}
+          >
+            {showToken ? <VisibilityOffOutlinedIcon fontSize="small" /> : <VisibilityOutlinedIcon fontSize="small" />}
+          </IconButton>
+        </Box>
       </Box>
       
       <Box>

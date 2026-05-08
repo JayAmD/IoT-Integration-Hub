@@ -28,6 +28,7 @@ export default function DeviceDetail() {
   // Form State
   const [formData, setFormData] = useState({
     name: '',
+    claimToken: '',
     groupIds: [],
   });
 
@@ -52,6 +53,7 @@ export default function DeviceDetail() {
         setAvailableGroups(groupsData);
         setFormData({
           name: deviceData.name || '',
+          claimToken: deviceData.claimToken || '',
           groupIds: deviceData.groups ? deviceData.groups.map(g => g._id) : [],
         });
       } catch (error) {
@@ -67,6 +69,7 @@ export default function DeviceDetail() {
     setIsEditMode(true);
     setFormData({
       name: device.name || '',
+      claimToken: device.claimToken || '',
       groupIds: device.groups ? device.groups.map(g => g._id) : [],
     });
   };
@@ -98,6 +101,7 @@ export default function DeviceDetail() {
     try {
       const response = await deviceApi.update(activeTenantId, deviceId, {
         name: formData.name,
+        claimToken: formData.claimToken,
         groupIds: formData.groupIds
       });
       const updatedData = response.data || response;

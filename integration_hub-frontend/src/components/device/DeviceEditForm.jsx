@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -11,9 +11,13 @@ import {
   Select,
   Stack,
   TextField,
+  IconButton,
+  InputAdornment,
 } from '@mui/material';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 
 export default function DeviceEditForm({
   device,
@@ -25,6 +29,8 @@ export default function DeviceEditForm({
   onSave,
   onCancel
 }) {
+  const [showToken, setShowToken] = useState(false);
+
   return (
     <Box component="form" onSubmit={onSave}>
       <Stack spacing={3}>
@@ -48,6 +54,34 @@ export default function DeviceEditForm({
           fullWidth
           InputProps={{ sx: { borderRadius: 2, bgcolor: 'grey.50' } }}
           helperText="Serial numbers cannot be modified."
+        />
+
+        <TextField
+          required
+          id="claimToken"
+          name="claimToken"
+          label="Claim Token"
+          type={showToken ? 'text' : 'password'}
+          value={formData.claimToken}
+          onChange={onChange}
+          disabled={isSaving}
+          fullWidth
+          InputProps={{ 
+            sx: { borderRadius: 2 },
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle token visibility"
+                  onClick={() => setShowToken(!showToken)}
+                  edge="end"
+                  size="small"
+                >
+                  {showToken ? <VisibilityOffOutlinedIcon fontSize="small" /> : <VisibilityOutlinedIcon fontSize="small" />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+          helperText="Unique token provided with the device."
         />
 
         <FormControl fullWidth disabled={isSaving}>

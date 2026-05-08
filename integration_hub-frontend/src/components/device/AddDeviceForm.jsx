@@ -74,6 +74,25 @@ export default function AddDeviceForm({
           }}
         />
 
+        <TextField
+          required
+          id="claimToken"
+          name="claimToken"
+          label="Claim Token"
+          type="text"
+          fullWidth
+          variant="outlined"
+          value={formData.claimToken}
+          onChange={onChange}
+          disabled={isSubmitting}
+          placeholder="e.g., A1B2C3D4"
+          sx={{ mb: 3 }}
+          InputProps={{
+            sx: { borderRadius: 2 }
+          }}
+          helperText="Unique token provided with the device."
+        />
+
         <FormControl fullWidth disabled={isSubmitting} sx={{ mb: 1 }}>
           <InputLabel id="groups-label">Assign to Groups (Optional)</InputLabel>
           <Select

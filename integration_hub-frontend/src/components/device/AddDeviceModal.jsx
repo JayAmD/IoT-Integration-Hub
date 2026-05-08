@@ -9,6 +9,7 @@ const AddDeviceModal = ({ open, onClose, onAddDevice, tenantId }) => {
   const [formData, setFormData] = useState({
     name: '',
     serialNumber: '',
+    claimToken: '',
     groups: [],
   });
   const [groups, setGroups] = useState([]);
@@ -48,7 +49,7 @@ const AddDeviceModal = ({ open, onClose, onAddDevice, tenantId }) => {
 
   const handleClose = () => {
     // Reset form when closing
-    setFormData({ name: '', serialNumber: '', groups: [] });
+    setFormData({ name: '', serialNumber: '', claimToken: '', groups: [] });
     setError(null);
     onClose();
   };
@@ -58,8 +59,8 @@ const AddDeviceModal = ({ open, onClose, onAddDevice, tenantId }) => {
     setError(null);
 
     // Basic validation
-    if (!formData.name.trim() || formData.serialNumber === '') {
-      setError('Name and Serial Number are required.');
+    if (!formData.name.trim() || formData.serialNumber === '' || !formData.claimToken.trim()) {
+      setError('Name, Serial Number, and Claim Token are required.');
       return;
     }
 
@@ -70,6 +71,7 @@ const AddDeviceModal = ({ open, onClose, onAddDevice, tenantId }) => {
       const devicePayload = {
         name: formData.name.trim(),
         serialNumber: Number(formData.serialNumber),
+        claimToken: formData.claimToken.trim(),
         groupIds: formData.groups, // Use groupIds for the API
       };
 
