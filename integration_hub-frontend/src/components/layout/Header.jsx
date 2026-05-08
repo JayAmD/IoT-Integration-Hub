@@ -5,12 +5,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from "@mui/icons-material/Close";
 import PersonIcon from '@mui/icons-material/Person';
 import { SidebarContext } from '../../context/SidebarContext.jsx';
-import { useAuth } from '../../context/AuthContext.jsx';
+import { useAuthContext } from '../../context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
     const { open, toggleOpen } = useContext(SidebarContext);
-    const { isLoggedIn, logout } = useAuth();
+    const { isLoggedIn, logout } = useAuthContext();
     const navigate = useNavigate();
 
     return (

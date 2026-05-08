@@ -19,7 +19,7 @@ import {
   Router, // IoT-like icon
 } from '@mui/icons-material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useAuthContext } from '../context/AuthContext.jsx';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -29,7 +29,7 @@ const LoginPage = () => {
   const [error, setError] = useState(null);
   
   // Use our new context
-  const { login } = useAuth();
+  const { login } = useAuthContext();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -37,7 +37,6 @@ const LoginPage = () => {
     setError(null);
     
     try {
-      // Replace this URL with your actual backend endpoint
       const response = await fetch('http://localhost:5500/api/v1/auth/login', {
         method: 'POST',
         headers: {
@@ -55,7 +54,6 @@ const LoginPage = () => {
       const token = responseData.data?.token;
       
       if (token) {
-        // Use the context function instead of calling localStorage and navigate directly
         login(token);
       } else {
         throw new Error('No token received from server.');

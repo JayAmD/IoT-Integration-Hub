@@ -3,6 +3,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PeopleIcon from "@mui/icons-material/People";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
+import GroupsIcon from "@mui/icons-material/Groups";
 import { useNavigate } from "react-router-dom";
 import { SidebarContext } from "../../context/SidebarContext.jsx";
 
@@ -26,6 +27,7 @@ const Sidebar = () => {
 
   const menuItems = [
     { label: "Devices", icon: <DashboardIcon />, path: "/devices" },
+    { label: "Groups", icon: <GroupsIcon />, path: "/groups" },
     { label: "Users", icon: <PeopleIcon />, path: "/users" },
     { label: "Analytics", icon: <AnalyticsIcon />, path: "/analytics" },
     { label: "Settings", icon: <SettingsIcon />, path: "/settings" },

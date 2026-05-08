@@ -19,7 +19,7 @@ import {
     Router, // IoT-like icon
 } from '@mui/icons-material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useAuthContext } from '../context/AuthContext.jsx';
 
 const SignupPage = () => {
     const [email, setEmail] = useState('');
@@ -30,7 +30,7 @@ const SignupPage = () => {
     const [error, setError] = useState(null);
     
     // Use our new context
-    const { login } = useAuth();
+    const { login } = useAuthContext();
 
     const handleSignup = async (e) => {
         e.preventDefault();
