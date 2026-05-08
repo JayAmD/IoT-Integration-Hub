@@ -30,6 +30,9 @@ const deviceSchema = new mongoose.Schema(
       ref: "Group",
       default: [],
     },
+    lastSeen: {
+      type: Date,
+    },
   }, {timestamps: true}
 );
 

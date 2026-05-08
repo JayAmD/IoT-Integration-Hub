@@ -11,7 +11,7 @@ const DISPATCH_QUEUE = 'external_dispatch_queue';
 export const startIngestionConsumer = async () => {
     try {
         const channel = await getRabbitChannel();
-        
+
         await channel.prefetch(1); // Process one by one for reliability
 
         console.log(`[Ingestion] Listening for messages in "${INGEST_QUEUE}"...`);
@@ -25,12 +25,16 @@ export const startIngestionConsumer = async () => {
             try {
                 // 1. Resolve Device from ID (provided by the Parser)
                 const device = await Device.findById(payload.deviceId);
-                
+
                 if (!device) {
-                    console.error(`[Ingestion] Device with SN ${payload.serialNumber} not found in Database!`);
+                    console.error(`[Ingestion] Device with ID ${payload.deviceId} not found in Database!`);
                     // We ACK anyway to remove it from queue, or move to DLX (Dead Letter Exchange)
                     return channel.ack(msg);
                 }
+
+                // Update lastSeen
+                device.lastSeen = payload.receivedAt;
+                await device.save();
 
                 // 2. Save to MongoDB (Outbox Pattern Step 1)
                 const newMessage = await Message.create({

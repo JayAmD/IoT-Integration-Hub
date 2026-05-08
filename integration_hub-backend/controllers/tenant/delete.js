@@ -17,10 +17,8 @@ const deleteTenant = async (req, res, next) => {
     session = await mongoose.startSession();
     session.startTransaction();
 
-    const deviceIds = await Device.find({ tenantId }).distinct("_id").session(session);
-
     await Promise.all([
-      Message.deleteMany({ deviceId: { $in: deviceIds } }).session(session),
+      Message.deleteMany({ tenantId }).session(session),
       Device.deleteMany({ tenantId }).session(session),
       Endpoint.deleteMany({ tenantId }).session(session),
       Group.deleteMany({ tenantId }).session(session),
