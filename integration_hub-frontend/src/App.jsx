@@ -10,6 +10,7 @@ import Devices from "./routes/Devices.jsx";
 import DeviceDetail from "./routes/DeviceDetail.jsx";
 import Messages from "./routes/Messages.jsx";
 import Groups from "./routes/Groups.jsx";
+import TenantSelector from "./routes/TenantSelector.jsx";
 import LoginPage from "./routes/LoginPage.jsx";
 import SignupPage from "./routes/SignupPage.jsx";
 
@@ -24,8 +25,12 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
 
+              <Route element={<ProtectedRoute requireTenant={false} />}>
+                <Route path="/tenant-selector" element={<TenantSelector />} />
+              </Route>
+
               {/* Protected Routes */}
-              <Route element={<ProtectedRoute />}>
+              <Route element={<ProtectedRoute requireTenant />}>
                 <Route element={<Layout />}>
                   <Route path="/devices" element={<Devices />} />
                   <Route path="/devices/:deviceId" element={<DeviceDetail />} />

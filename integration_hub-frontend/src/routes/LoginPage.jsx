@@ -18,7 +18,7 @@ import {
   LockOutlined,
   Router, // IoT-like icon
 } from '@mui/icons-material';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext.jsx';
 
 const LoginPage = () => {
@@ -52,9 +52,10 @@ const LoginPage = () => {
       const responseData = await response.json();
       
       const token = responseData.data?.token;
+      const user = responseData.data?.user;
       
       if (token) {
-        login(token);
+        await login(token, user);
       } else {
         throw new Error('No token received from server.');
       }

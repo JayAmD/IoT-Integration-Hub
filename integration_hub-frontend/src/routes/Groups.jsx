@@ -8,7 +8,7 @@ import { useAuthContext } from "../context/AuthContext.jsx";
 
 export default function Groups() {
     const { groups, loadGroups, addGroup, updateGroup, deleteGroup } = useGroupsContext();
-    const { token } = useAuthContext();
+    const { token, activeTenantId } = useAuthContext();
 
     // State
     const [filteredGroups, setFilteredGroups] = useState([]);
@@ -26,8 +26,12 @@ export default function Groups() {
     // Load groups on mount
     useEffect(() => {
         const fetchGroups = async () => {
+            if (!activeTenantId) {
+                return;
+            }
+
             try {
-                await loadGroups();
+                await loadGroups(activeTenantId);
                 setError("");
             } catch (err) {
                 setError(err.message || "Failed to load groups");
@@ -35,7 +39,7 @@ export default function Groups() {
         };
 
         fetchGroups();
-    }, [token]);
+    }, [token, activeTenantId]);
 
     // Filter groups based on search
     useEffect(() => {
@@ -65,7 +69,7 @@ export default function Groups() {
 
     const handleAddGroup = async (groupData) => {
         try {
-            await addGroup(groupData.name);
+            await addGroup(activeTenantId, groupData.name);
             showSnackbar("Group created successfully!");
         } catch (err) {
             showSnackbar(err.message || "Failed to create group", "error");
@@ -93,7 +97,7 @@ export default function Groups() {
         }
 
         try {
-            await updateGroup(groupId, { name: editValue.trim() });
+            await updateGroup(activeTenantId, groupId, { name: editValue.trim() });
             setEditingGroupId(null);
             setEditValue("");
             showSnackbar("Group updated successfully!");
@@ -118,7 +122,7 @@ export default function Groups() {
         }
 
         try {
-            await deleteGroup(groupId);
+            await deleteGroup(activeTenantId, groupId);
             showSnackbar("Group deleted successfully!");
         } catch (err) {
             showSnackbar(err.message || "Failed to delete group", "error");

@@ -5,7 +5,7 @@ import { groupApi } from '../../api/groupApi.js';
 import AddDeviceHeader from './AddDeviceHeader.jsx';
 import AddDeviceForm from './AddDeviceForm.jsx';
 
-const AddDeviceModal = ({ open, onClose, onAddDevice }) => {
+const AddDeviceModal = ({ open, onClose, onAddDevice, tenantId }) => {
   const [formData, setFormData] = useState({
     name: '',
     serialNumber: '',
@@ -20,7 +20,8 @@ const AddDeviceModal = ({ open, onClose, onAddDevice }) => {
     if (open) {
       const fetchGroups = async () => {
         try {
-          const response = await groupApi.list();
+          if (!tenantId) return;
+          const response = await groupApi.list(tenantId);
           setGroups(response?.data || response || []);
         } catch (err) {
           console.error("Failed to load groups", err);
@@ -28,7 +29,7 @@ const AddDeviceModal = ({ open, onClose, onAddDevice }) => {
       };
       fetchGroups();
     }
-  }, [open]);
+  }, [open, tenantId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,7 +74,7 @@ const AddDeviceModal = ({ open, onClose, onAddDevice }) => {
       };
 
       // Call our centralized API wrapper
-      await deviceApi.create(devicePayload);
+      await deviceApi.create(tenantId, devicePayload);
       
       // Since we just tell the parent to refresh the list, we don't need to pass the object back
       onAddDevice();

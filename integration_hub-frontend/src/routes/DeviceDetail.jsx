@@ -7,6 +7,7 @@ import {
 import React, { useState, useEffect } from "react";
 import { deviceApi } from "../api/deviceApi.js";
 import { groupApi } from "../api/groupApi.js";
+import { useAuthContext } from "../context/AuthContext.jsx";
 
 import DeviceDetailHeader from "../components/device/DeviceDetailHeader.jsx";
 import DeviceDetailCard from "../components/device/DeviceDetailCard.jsx";
@@ -14,6 +15,7 @@ import DeviceDetailCard from "../components/device/DeviceDetailCard.jsx";
 export default function DeviceDetail() {
   const { deviceId } = useParams();
   const navigate = useNavigate();
+  const { activeTenantId } = useAuthContext();
   
   // State
   const [device, setDevice] = useState(null);
@@ -32,11 +34,15 @@ export default function DeviceDetail() {
   // Load device and groups data on mount
   useEffect(() => {
     const loadData = async () => {
+      if (!activeTenantId) {
+        return;
+      }
+
       setIsLoading(true);
       try {
         const [deviceResponse, groupsResponse] = await Promise.all([
-          deviceApi.getById(deviceId),
-          groupApi.list()
+          deviceApi.getById(activeTenantId, deviceId),
+          groupApi.list(activeTenantId)
         ]);
         
         const deviceData = deviceResponse.data || deviceResponse;
@@ -55,7 +61,7 @@ export default function DeviceDetail() {
       }
     };
     loadData();
-  }, [deviceId]);
+  }, [deviceId, activeTenantId]);
 
   const handleEditClick = () => {
     setIsEditMode(true);
@@ -90,7 +96,7 @@ export default function DeviceDetail() {
     setIsSaving(true);
     
     try {
-      const response = await deviceApi.update(deviceId, {
+      const response = await deviceApi.update(activeTenantId, deviceId, {
         name: formData.name,
         groupIds: formData.groupIds
       });
@@ -108,7 +114,7 @@ export default function DeviceDetail() {
     if (window.confirm("Are you sure you want to delete this device?")) {
       setIsDeleting(true);
       try {
-        await deviceApi.delete(deviceId);
+        await deviceApi.delete(activeTenantId, deviceId);
         navigate('/devices');
       } catch (error) {
         console.error("Failed to delete device", error);

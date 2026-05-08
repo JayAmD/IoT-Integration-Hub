@@ -18,7 +18,7 @@ import {
     LockOutlined,
     Router, // IoT-like icon
 } from '@mui/icons-material';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext.jsx';
 
 const SignupPage = () => {
@@ -59,10 +59,10 @@ const SignupPage = () => {
             const responseData = await response.json();
             
             const token = responseData.data?.token;
+            const user = responseData.data?.user;
 
             if (token) {
-                // Use the context function instead of calling localStorage directly
-                login(token);
+                await login(token, user);
             } else {
                  throw new Error('No token received from server after registration.');
             }

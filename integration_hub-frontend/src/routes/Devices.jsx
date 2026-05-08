@@ -5,9 +5,11 @@ import DevicesHeader from "../components/device/DevicesHeader.jsx";
 import DeviceList from "../components/device/DeviceList.jsx";
 import AddDeviceModal from "../components/device/AddDeviceModal.jsx";
 import { deviceApi } from "../api/deviceApi.js";
+import { useAuthContext } from "../context/AuthContext.jsx";
 
 export default function Devices() {
   const navigate = useNavigate();
+  const { activeTenantId } = useAuthContext();
   
   // State
   const [devices, setDevices] = useState([]);
@@ -25,10 +27,14 @@ export default function Devices() {
 
   // Load devices from backend
   const fetchDevices = async () => {
+    if (!activeTenantId) {
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
-      const response = await deviceApi.list();
+      const response = await deviceApi.list(activeTenantId);
       // Assuming your backend returns { data: [...] }
       const deviceList = response?.data || response || [];
       setDevices(deviceList);
@@ -43,7 +49,7 @@ export default function Devices() {
   // Initial load
   useEffect(() => {
     fetchDevices();
-  }, []);
+  }, [activeTenantId]);
 
   const handleAddDeviceClick = () => {
     setIsAddModalOpen(true);
@@ -144,7 +150,8 @@ export default function Devices() {
       <AddDeviceModal 
         open={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
-        onAddDevice={handleDeviceAdded} 
+        onAddDevice={handleDeviceAdded}
+        tenantId={activeTenantId}
       />
 
       <Snackbar 

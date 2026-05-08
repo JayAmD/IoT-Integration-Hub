@@ -2,33 +2,33 @@ import client from './client.js';
 
 export const deviceApi = {
     // Fetch all devices
-    list: async () => {
-        return await client('/devices', { method: 'GET' });
+    list: async (tenantId) => {
+        return await client(`/tenants/${tenantId}/devices`, { method: 'GET' });
     },
 
     // Fetch a single device by its ID
-    getById: async (id) => {
-        return await client(`/devices/${id}`, { method: 'GET' });
+    getById: async (tenantId, id) => {
+        return await client(`/tenants/${tenantId}/devices/${id}`, { method: 'GET' });
     },
 
     // Create a new device
-    create: async (deviceData) => {
-        return await client('/devices', {
+    create: async (tenantId, deviceData) => {
+        return await client(`/tenants/${tenantId}/devices`, {
             method: 'POST',
             body: deviceData,
         });
     },
 
     // Update an existing device by its ID
-    update: async (id, updateData) => {
-        return await client(`/devices/${id}`, {
+    update: async (tenantId, id, updateData) => {
+        return await client(`/tenants/${tenantId}/devices/${id}`, {
             method: 'PATCH',
             body: updateData,
         });
     },
 
     // Delete a device by its ID
-    delete: async (id) => {
-        return await client(`/devices/${id}`, { method: 'DELETE' });
+    delete: async (tenantId, id) => {
+        return await client(`/tenants/${tenantId}/devices/${id}`, { method: 'DELETE' });
     }
 };
