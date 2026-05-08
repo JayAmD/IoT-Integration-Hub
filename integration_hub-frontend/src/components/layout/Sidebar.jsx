@@ -28,7 +28,7 @@ const Sidebar = () => {
   const menuItems = [
     { label: "Devices", icon: <DashboardIcon />, path: "/devices" },
     { label: "Groups", icon: <GroupsIcon />, path: "/groups" },
-    { label: "Users", icon: <PeopleIcon />, path: "/users" },
+    { label: "Tenants", icon: <PeopleIcon />, path: "/tenants" },
     { label: "Analytics", icon: <AnalyticsIcon />, path: "/analytics" },
     { label: "Settings", icon: <SettingsIcon />, path: "/settings" },
   ];

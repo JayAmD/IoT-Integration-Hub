@@ -9,7 +9,7 @@ const ProtectedRoute = ({ requireTenant = true }) => {
     }
 
     if (requireTenant && !activeTenantId) {
-        return <Navigate to="/tenant-selector" replace />;
+        return <Navigate to="/tenants" replace />;
     }
 
     return <Outlet />;

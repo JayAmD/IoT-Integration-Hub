@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
         }
 
         setActiveTenantId(null);
-        navigate('/tenant-selector');
+        navigate('/tenants');
     };
 
     // Logout handler

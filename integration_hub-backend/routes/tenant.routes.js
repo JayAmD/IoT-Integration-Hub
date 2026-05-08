@@ -6,6 +6,7 @@ import authorizeTenant from "../middlewares/tenant.middleware.js";
 import createTenant from "../controllers/tenant/create.js";
 import listTenants from "../controllers/tenant/list.js";
 import getTenantDetail from "../controllers/tenant/getDetail.js";
+import updateTenant from "../controllers/tenant/update.js";
 import deleteTenant from "../controllers/tenant/delete.js";
 import addMember from "../controllers/tenant/addMember.js";
 import removeMember from "../controllers/tenant/removeMember.js";
@@ -21,6 +22,9 @@ tenantRouter.post("/", authenticate, createTenant);
 
 // Get tenant detail
 tenantRouter.get("/:tenantId", authenticate, authorizeTenant(["owner", "admin", "viewer"]), getTenantDetail);
+
+// Update tenant name / description
+tenantRouter.patch("/:tenantId", authenticate, authorizeTenant(["owner", "admin"]), updateTenant);
 
 // Delete tenant
 tenantRouter.delete("/:tenantId", authenticate, authorizeTenant(["owner"]), deleteTenant);
