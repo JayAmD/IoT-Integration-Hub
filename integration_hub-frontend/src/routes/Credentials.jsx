@@ -24,6 +24,10 @@ export default function Credentials() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCredential, setEditingCredential] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  
+  // Reveal state
+  const [revealedSecrets, setRevealedSecrets] = useState({});
+  const [revealingIds, setRevealingIds] = useState(new Set());
 
   useEffect(() => {
     loadCredentials(activeTenantId);
@@ -76,11 +80,34 @@ export default function Credentials() {
   };
 
   const handleReveal = async (id) => {
+    // If already revealed, hide it (toggle)
+    if (revealedSecrets[id]) {
+      setRevealedSecrets(prev => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      return;
+    }
+
+    // Start revealing
+    setRevealingIds(prev => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+
     try {
-      return await revealSecret(activeTenantId, id);
+      const secret = await revealSecret(activeTenantId, id);
+      setRevealedSecrets(prev => ({ ...prev, [id]: secret }));
     } catch (err) {
       showSnackbar(err.message || 'Failed to reveal secret', 'error');
-      throw err;
+    } finally {
+      setRevealingIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     }
   };
 
@@ -107,6 +134,8 @@ export default function Credentials() {
           onEdit={handleOpenEditModal}
           onDelete={handleDelete}
           onReveal={handleReveal}
+          revealedSecrets={revealedSecrets}
+          revealingIds={revealingIds}
         />
       )}
 

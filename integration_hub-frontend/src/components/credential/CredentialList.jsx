@@ -6,6 +6,8 @@ export default function CredentialList({
   onEdit,
   onDelete,
   onReveal,
+  revealedSecrets,
+  revealingIds
 }) {
   if (!credentials.length) {
     return (
@@ -24,6 +26,8 @@ export default function CredentialList({
           onEdit={onEdit}
           onDelete={onDelete}
           onReveal={onReveal}
+          revealedSecret={revealedSecrets[credential._id]}
+          isRevealing={revealingIds.has(credential._id)}
         />
       ))}
     </Stack>

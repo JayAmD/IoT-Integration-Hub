@@ -4,37 +4,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Box, IconButton, Paper, Stack, Typography, Tooltip, Chip } from "@mui/material";
-import { useState } from "react";
-
 export default function CredentialListItem({
   credential,
   onEdit,
   onDelete,
-  onReveal
+  onReveal,
+  revealedSecret,
+  isRevealing
 }) {
-  const [revealedSecret, setRevealedSecret] = useState(null);
-  const [isRevealing, setIsRevealing] = useState(false);
-
   const formattedDate = new Date(credential.createdAt).toLocaleDateString();
-
-  const handleToggleReveal = async () => {
-    if (revealedSecret) {
-      setRevealedSecret(null);
-      return;
-    }
-
-    setIsRevealing(true);
-    try {
-      const secret = await onReveal(credential._id);
-      setRevealedSecret(secret);
-    } catch (err) {
-      // Error is handled by orchestrator/snackbar usually, 
-      // but we log here for dev
-      console.error("Failed to reveal secret", err);
-    } finally {
-      setIsRevealing(false);
-    }
-  };
 
   return (
     <Paper
@@ -104,7 +82,7 @@ export default function CredentialListItem({
         <Stack direction="row" spacing={0.5}>
           <Tooltip title={revealedSecret ? "Hide Secret" : "Reveal Secret"}>
             <IconButton 
-                onClick={handleToggleReveal} 
+                onClick={() => onReveal(credential._id)} 
                 size="small" 
                 color="secondary"
                 disabled={isRevealing}
