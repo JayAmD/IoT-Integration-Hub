@@ -68,10 +68,10 @@ export const GroupProvider = ({ children }) => {
 };
 
 // 3. Create a custom hook for easy consumption
-export const useGroupsContext = () => {
+export const useGroupContext = () => {
     const context = useContext(GroupContext);
     if (context === undefined) {
-        throw new Error('useGroupsContext must be used within a GroupProvider');
+        throw new Error('useGroupContext must be used within a GroupProvider');
     }
     return context;
 };

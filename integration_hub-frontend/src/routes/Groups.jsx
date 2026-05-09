@@ -3,11 +3,11 @@ import { Box, Snackbar, Alert, Typography } from "@mui/material";
 import GroupsHeader from "../components/group/GroupsHeader.jsx";
 import GroupList from "../components/group/GroupList.jsx";
 import AddGroupModal from "../components/group/AddGroupModal.jsx";
-import { useGroupsContext } from "../context/GroupContext.jsx";
+import { useGroupContext } from "../context/GroupContext.jsx";
 import { useAuthContext } from "../context/AuthContext.jsx";
 
 export default function Groups() {
-    const { groups, loadGroups, addGroup, updateGroup, deleteGroup } = useGroupsContext();
+    const { groups, loadGroups, addGroup, updateGroup, deleteGroup } = useGroupContext();
     const { token, activeTenantId } = useAuthContext();
 
     // State

@@ -5,6 +5,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import GroupsIcon from "@mui/icons-material/Groups";
+import HubIcon from '@mui/icons-material/Hub';
 import { useNavigate } from "react-router-dom";
 import { SidebarContext } from "../../context/SidebarContext.jsx";
 import { useAuthContext } from "../../context/AuthContext.jsx";
@@ -35,6 +36,7 @@ const Sidebar = () => {
     { label: "Groups", icon: <GroupsIcon />, path: `/tenants/${activeTenantId}/groups` },
     { label: "Messages", icon: <MessageIcon />, path: `/tenants/${activeTenantId}/messages` },
     { label: "Credentials", icon: <VpnKeyIcon />, path: `/tenants/${activeTenantId}/credentials` },
+    { label: "Endpoints", icon: <HubIcon />, path: `/tenants/${activeTenantId}/endpoints` },
     { label: "Tenants", icon: <BusinessIcon />, path: "/tenants" },
     { label: "Analytics", icon: <AnalyticsIcon />, path: `/tenants/${activeTenantId}/analytics` },
     { label: "Settings", icon: <SettingsIcon />, path: `/tenants/${activeTenantId}/settings` },
