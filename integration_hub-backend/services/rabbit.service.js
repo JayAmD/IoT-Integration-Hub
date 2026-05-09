@@ -30,11 +30,33 @@ export const getRabbitChannel = async () => {
 
         channel = await connection.createChannel();
         
-        // Ensure both queues exist
+        // Ensure queues exist
         await channel.assertQueue('udp_parser_server_iot_msgs_queue', { durable: true });
-        await channel.assertQueue('external_dispatch_queue', { durable: true });
 
-        console.log(`[RabbitService] Connected and Queues initialized.`);
+        // External Dispatch Infrastructure
+        const DISPATCH_EXCHANGE = 'external_dispatch_exchange';
+        const DISPATCH_QUEUE = 'external_dispatch_queue';
+        const DELAY_QUEUE = 'external_dispatch_delay_queue';
+
+        // 1. The Exchange: Acts as a router
+        await channel.assertExchange(DISPATCH_EXCHANGE, 'direct', { durable: true });
+
+        // 2. The Main Queue: Where the worker listens
+        await channel.assertQueue(DISPATCH_QUEUE, { durable: true });
+        await channel.bindQueue(DISPATCH_QUEUE, DISPATCH_EXCHANGE, 'dispatch');
+
+        // 3. The Snooze Box (Delay Queue): 
+        // It has NO consumers. Messages sit here until their TTL expires, 
+        // then they are "dead-lettered" back to the main exchange.
+        await channel.assertQueue(DELAY_QUEUE, {
+            durable: true,
+            arguments: {
+                'x-dead-letter-exchange': DISPATCH_EXCHANGE,
+                'x-dead-letter-routing-key': 'dispatch'
+            }
+        });
+
+        console.log(`[RabbitService] Connected and Queues initialized (including Dispatch & Delay).`);
         return channel;
     } catch (error) {
         console.error("[RabbitService] Failed to initialize RabbitMQ:", error.message);

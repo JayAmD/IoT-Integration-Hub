@@ -24,18 +24,30 @@ const messageSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.Mixed,
             required: true
         },
-        status: {
-            type: String,
-            enum: ['pending', 'delivered', 'failed'],
-            default: 'pending'
-        },
-        deliveryAttempts: {
-            type: Number,
-            default: 0
-        },
-        lastError: {
-            type: String
-        }
+        dispatches: [
+            {
+                endpointId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'Endpoint',
+                    required: true
+                },
+                status: {
+                    type: String,
+                    enum: ['pending', 'delivered', 'failed'],
+                    default: 'pending'
+                },
+                deliveryAttempts: {
+                    type: Number,
+                    default: 0
+                },
+                lastError: {
+                    type: String
+                },
+                lastAttemptAt: {
+                    type: Date
+                }
+            }
+        ]
     }, { timestamps: true }
 )
 

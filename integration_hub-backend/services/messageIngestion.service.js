@@ -1,6 +1,7 @@
 import { getRabbitChannel } from './rabbit.service.js';
 import Message from '../models/message.model.js';
 import Device from '../models/device.model.js';
+import Endpoint from '../models/endpoint.model.js';
 
 const INGEST_QUEUE = 'udp_parser_server_iot_msgs_queue';
 const DISPATCH_QUEUE = 'external_dispatch_queue';
@@ -36,29 +37,44 @@ export const startIngestionConsumer = async () => {
                 device.lastSeen = payload.receivedAt;
                 await device.save();
 
-                // 2. Save to MongoDB (Outbox Pattern Step 1)
+                // 2. Find applicable Endpoints for this tenant (Optimized Query)
+                const matchingEndpoints = await Endpoint.find({
+                    tenantId: device.tenantId,
+                    isActive: true,
+                    $or: [
+                        { groupIds: { $size: 0 } },            // Global endpoints
+                        { groupIds: { $in: device.groupIds } }  // Group-specific endpoints
+                    ]
+                });
+
+                // 3. Save to MongoDB (Outbox Pattern Step 1)
                 const newMessage = await Message.create({
                     deviceId: device._id,
                     tenantId: device.tenantId,
                     serialNumber: payload.serialNumber,
                     receivedAt: payload.receivedAt,
                     data: payload.data,
-                    status: 'pending'
+                    dispatches: matchingEndpoints.map(ep => ({
+                        endpointId: ep._id,
+                        status: 'pending'
+                    }))
                 });
 
-                // 3. Publish to Dispatch Queue (Outbox Pattern Step 2)
-                const dispatchPayload = {
-                    messageId: newMessage._id,
-                    deviceId: device._id
-                };
+                // 4. Publish to Dispatch Queue for EACH endpoint (Outbox Pattern Step 2)
+                for (const ep of matchingEndpoints) {
+                    const dispatchPayload = {
+                        messageId: newMessage._id,
+                        endpointId: ep._id
+                    };
 
-                channel.sendToQueue(DISPATCH_QUEUE, Buffer.from(JSON.stringify(dispatchPayload)), {
-                    persistent: true
-                });
+                    channel.sendToQueue(DISPATCH_QUEUE, Buffer.from(JSON.stringify(dispatchPayload)), {
+                        persistent: true
+                    });
+                }
 
-                // 4. ACK the ingestion queue
+                // 5. ACK the ingestion queue
                 channel.ack(msg);
-                console.log(`[Ingestion] Message ${newMessage._id} saved and queued for dispatch.`);
+                console.log(`[Ingestion] Message ${newMessage._id} saved and queued for ${matchingEndpoints.length} endpoints.`);
 
             } catch (error) {
                 console.error(`[Ingestion] Error processing message:`, error.message);
