@@ -17,6 +17,9 @@ const createEndpoint = async (req, res, next) => {
             tenantId: req.currentTenant._id, // always from auth, never from client
         });
 
+        // Populate group names so the frontend can display them immediately
+        await endpoint.populate('groupIds', 'name');
+
         res.status(201).json({ success: true, data: endpoint });
     } catch (e) {
         next(e);
