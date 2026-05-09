@@ -11,7 +11,9 @@ const getMessageDetail = async (req, res, next) => {
     }).populate("deviceId", "name serialNumber");
 
     if (!message) {
-      return res.status(404).json({ success: false, message: "Message not found" });
+      const error = new Error("Message not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     res.status(200).json({ success: true, data: message });
