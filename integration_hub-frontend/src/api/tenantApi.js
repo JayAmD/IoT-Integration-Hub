@@ -3,53 +3,61 @@ import client from './client.js';
 export const tenantApi = {
     // Fetch all tenants available to the current user
     list: async () => {
-        return await client('/tenants', { method: 'GET' });
+        const response = await client('/tenants', { method: 'GET' });
+        return response.data;
     },
 
     // Fetch a single tenant by its ID
     getById: async (tenantId) => {
-        return await client(`/tenants/${tenantId}`, { method: 'GET' });
+        const response = await client(`/tenants/${tenantId}`, { method: 'GET' });
+        return response.data;
     },
 
     // Create a new tenant
     create: async (tenantData) => {
-        return await client('/tenants', {
+        const response = await client('/tenants', {
             method: 'POST',
             body: tenantData,
         });
+        return response.data;
     },
 
     // Update an existing tenant by its ID
     update: async (tenantId, updateData) => {
-        return await client(`/tenants/${tenantId}`, {
+        const response = await client(`/tenants/${tenantId}`, {
             method: 'PATCH',
             body: updateData,
         });
+        return response.data;
     },
 
     // Delete a tenant by its ID
     delete: async (tenantId) => {
-        return await client(`/tenants/${tenantId}`, { method: 'DELETE' });
+        const response = await client(`/tenants/${tenantId}`, { method: 'DELETE' });
+        return response.data;
     },
 
     // Add a member to a tenant by email
     addMember: async (tenantId, memberData) => {
-        return await client(`/tenants/${tenantId}/members`, {
+        const response = await client(`/tenants/${tenantId}/members`, {
             method: 'POST',
             body: memberData,  // { email, role }
         });
+        return response.data;
     },
 
     // Remove a member from a tenant
     removeMember: async (tenantId, userId) => {
-        return await client(`/tenants/${tenantId}/members/${userId}`, { method: 'DELETE' });
+        const response = await client(`/tenants/${tenantId}/members/${userId}`, { method: 'DELETE' });
+        return response.data;
     },
 
     // Update a member's role
     updateMemberRole: async (tenantId, userId, roleData) => {
-        return await client(`/tenants/${tenantId}/members/${userId}`, {
+        const response = await client(`/tenants/${tenantId}/members/${userId}`, {
             method: 'PATCH',
             body: roleData,
         });
+        return response.data;
     },
 };

@@ -34,10 +34,8 @@ export default function Devices() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await deviceApi.list(activeTenantId);
-      // Assuming your backend returns { data: [...] }
-      const deviceList = response?.data || response || [];
-      setDevices(deviceList);
+      const deviceList = await deviceApi.list(activeTenantId);
+      setDevices(deviceList || []);
     } catch (err) {
       console.error("Failed to fetch devices:", err);
       setError("Error: "+ err.message || "Failed to load devices. Please try again later.");

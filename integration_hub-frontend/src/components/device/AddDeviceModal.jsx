@@ -22,8 +22,8 @@ const AddDeviceModal = ({ open, onClose, onAddDevice, tenantId }) => {
       const fetchGroups = async () => {
         try {
           if (!tenantId) return;
-          const response = await groupApi.list(tenantId);
-          setGroups(response?.data || response || []);
+          const groupList = await groupApi.list(tenantId);
+          setGroups(groupList || []);
         } catch (err) {
           console.error("Failed to load groups", err);
         }

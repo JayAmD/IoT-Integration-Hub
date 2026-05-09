@@ -11,9 +11,8 @@ export const TenantProvider = ({ children }) => {
     // Load all tenants
     const loadTenants = async () => {
         try {
-            const response = await tenantApi.list();
-            const tenantList = response?.data || response || [];
-            setTenants(tenantList);
+            const tenantList = await tenantApi.list();
+            setTenants(tenantList || []);
         } catch (err) {
             console.error("Failed to load tenants:", err);
             throw err;
@@ -23,8 +22,7 @@ export const TenantProvider = ({ children }) => {
     // Get a single tenant by ID
     const getTenantById = async (tenantId) => {
         try {
-            const response = await tenantApi.getById(tenantId);
-            return response?.data || response;
+            return await tenantApi.getById(tenantId);
         } catch (err) {
             console.error("Failed to fetch tenant:", err);
             throw err;
@@ -34,8 +32,7 @@ export const TenantProvider = ({ children }) => {
     // Add a new tenant
     const addTenant = async (tenantData) => {
         try {
-            const response = await tenantApi.create(tenantData);
-            const newTenant = response?.data || response;
+            const newTenant = await tenantApi.create(tenantData);
             setTenants((prev) => [...prev, newTenant]);
             return newTenant;
         } catch (err) {
@@ -47,8 +44,7 @@ export const TenantProvider = ({ children }) => {
     // Update an existing tenant
     const updateTenant = async (tenantId, updateData) => {
         try {
-            const response = await tenantApi.update(tenantId, updateData);
-            const updatedTenant = response?.data || response;
+            const updatedTenant = await tenantApi.update(tenantId, updateData);
             setTenants((prev) =>
                 prev.map((tenant) => (tenant._id === tenantId ? updatedTenant : tenant))
             );
@@ -73,8 +69,7 @@ export const TenantProvider = ({ children }) => {
     // Add a member to a tenant
     const addMember = async (tenantId, email, role = 'viewer') => {
         try {
-            const response = await tenantApi.addMember(tenantId, { email, role });
-            const updatedTenant = response?.data || response;
+            const updatedTenant = await tenantApi.addMember(tenantId, { email, role });
             setTenants((prev) =>
                 prev.map((tenant) => (tenant._id === tenantId ? updatedTenant : tenant))
             );
@@ -88,8 +83,7 @@ export const TenantProvider = ({ children }) => {
     // Remove a member from a tenant
     const removeMember = async (tenantId, userId) => {
         try {
-            const response = await tenantApi.removeMember(tenantId, userId);
-            const updatedTenant = response?.data || response;
+            const updatedTenant = await tenantApi.removeMember(tenantId, userId);
             setTenants((prev) =>
                 prev.map((tenant) => (tenant._id === tenantId ? updatedTenant : tenant))
             );
@@ -103,8 +97,7 @@ export const TenantProvider = ({ children }) => {
     // Update a member's role
     const updateMemberRole = async (tenantId, userId, role) => {
         try {
-            const response = await tenantApi.updateMemberRole(tenantId, userId, { role });
-            const updatedTenant = response?.data || response;
+            const updatedTenant = await tenantApi.updateMemberRole(tenantId, userId, { role });
             setTenants((prev) =>
                 prev.map((tenant) => (tenant._id === tenantId ? updatedTenant : tenant))
             );

@@ -45,8 +45,8 @@ export const CredentialProvider = ({ children }) => {
     };
 
     const revealSecret = async (tenantId, id) => {
-        const data = await credentialApi.reveal(tenantId, id);
-        return data.secret;
+        const secret = await credentialApi.reveal(tenantId, id);
+        return secret;
     };
 
     const value = {

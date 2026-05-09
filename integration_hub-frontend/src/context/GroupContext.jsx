@@ -11,9 +11,8 @@ export const GroupProvider = ({ children }) => {
     // Load all groups
     const loadGroups = async (tenantId) => {
         try {
-            const response = await groupApi.list(tenantId);
-            const groupList = response?.data || response || [];
-            setGroups(groupList);
+            const groupList = await groupApi.list(tenantId);
+            setGroups(groupList || []);
         } catch (err) {
             console.error("Failed to load groups:", err);
             throw err;
@@ -23,8 +22,7 @@ export const GroupProvider = ({ children }) => {
     // Add a new group
     const addGroup = async (tenantId, name) => {
         try {
-            const response = await groupApi.create(tenantId, { name });
-            const newGroup = response?.data || response;
+            const newGroup = await groupApi.create(tenantId, { name });
             setGroups((prev) => [...prev, newGroup]);
             return newGroup;
         } catch (err) {
@@ -36,8 +34,7 @@ export const GroupProvider = ({ children }) => {
     // Update an existing group
     const updateGroup = async (tenantId, id, updateData) => {
         try {
-            const response = await groupApi.update(tenantId, id, updateData);
-            const updatedGroup = response?.data || response;
+            const updatedGroup = await groupApi.update(tenantId, id, updateData);
             setGroups((prev) =>
                 prev.map((group) => (group._id === id ? updatedGroup : group))
             );

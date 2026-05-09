@@ -20,6 +20,7 @@ import {
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext.jsx';
+import { authApi } from '../api/authApi.js';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -37,22 +38,7 @@ const LoginPage = () => {
     setError(null);
     
     try {
-      const response = await fetch('http://localhost:5500/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Login failed. Please check your credentials.');
-      }
-
-      const responseData = await response.json();
-      
-      const token = responseData.data?.token;
-      const user = responseData.data?.user;
+      const { token, user } = await authApi.login(email, password);
       
       if (token) {
         await login(token, user);

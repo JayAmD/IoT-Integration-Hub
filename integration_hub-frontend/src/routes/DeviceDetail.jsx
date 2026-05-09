@@ -41,16 +41,13 @@ export default function DeviceDetail() {
 
       setIsLoading(true);
       try {
-        const [deviceResponse, groupsResponse] = await Promise.all([
+        const [deviceData, groupsData] = await Promise.all([
           deviceApi.getById(activeTenantId, deviceId),
           groupApi.list(activeTenantId)
         ]);
-        
-        const deviceData = deviceResponse.data || deviceResponse;
-        const groupsData = groupsResponse.data || groupsResponse || [];
 
         setDevice(deviceData);
-        setAvailableGroups(groupsData);
+        setAvailableGroups(groupsData || []);
         setFormData({
           name: deviceData.name || '',
           claimToken: deviceData.claimToken || '',
@@ -99,12 +96,11 @@ export default function DeviceDetail() {
     setIsSaving(true);
     
     try {
-      const response = await deviceApi.update(activeTenantId, deviceId, {
+      const updatedData = await deviceApi.update(activeTenantId, deviceId, {
         name: formData.name,
         claimToken: formData.claimToken,
         groupIds: formData.groupIds
       });
-      const updatedData = response.data || response;
       setDevice(updatedData);
       setIsEditMode(false);
     } catch (error) {

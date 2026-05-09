@@ -4,13 +4,13 @@ export const credentialApi = {
     // Fetch all credentials
     list: async (tenantId) => {
         const response = await client(`/tenants/${tenantId}/credentials`, { method: 'GET' });
-        return response.data || response;
+        return response.data;
     },
 
     // Fetch a single credential by its ID
     getById: async (tenantId, id) => {
         const response = await client(`/tenants/${tenantId}/credentials/${id}`, { method: 'GET' });
-        return response.data || response;
+        return response.data;
     },
 
     // Create a new credential
@@ -19,7 +19,7 @@ export const credentialApi = {
             method: 'POST',
             body: credentialData,
         });
-        return response.data || response;
+        return response.data;
     },
 
     // Update an existing credential
@@ -28,18 +28,18 @@ export const credentialApi = {
             method: 'PATCH',
             body: updateData,
         });
-        return response.data || response;
+        return response.data;
     },
 
     // Delete a credential
     delete: async (tenantId, id) => {
         const response = await client(`/tenants/${tenantId}/credentials/${id}`, { method: 'DELETE' });
-        return response.data || response;
+        return response.data;
     },
 
     // Reveal the plaintext secret
     reveal: async (tenantId, id) => {
         const response = await client(`/tenants/${tenantId}/credentials/${id}/reveal`, { method: 'POST' });
-        return response.data || response;
+        return response.data.secret;
     }
 };

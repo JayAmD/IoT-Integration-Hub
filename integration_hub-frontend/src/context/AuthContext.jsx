@@ -40,9 +40,8 @@ export const AuthProvider = ({ children }) => {
 
     const bootstrapTenants = async () => {
         try {
-            const response = await tenantApi.list();
-            const tenantList = response?.data || response || [];
-            setTenants(tenantList);
+            const tenantList = await tenantApi.list();
+            setTenants(tenantList || []);
             return tenantList;
         } catch (err) {
             console.error("Failed to bootstrap tenants:", err);

@@ -20,6 +20,7 @@ import {
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext.jsx';
+import { authApi } from '../api/authApi.js';
 
 const SignupPage = () => {
     const [email, setEmail] = useState('');
@@ -43,23 +44,7 @@ const SignupPage = () => {
 
         setIsLoading(true);
         try {
-            // Replace this URL with your actual backend endpoint
-            const response = await fetch('http://localhost:5500/api/v1/auth/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }), // confirmPassword is not sent
-            });
-
-            if (!response.ok) {
-                throw new Error('Registration failed. Please try again.');
-            }
-
-            const responseData = await response.json();
-            
-            const token = responseData.data?.token;
-            const user = responseData.data?.user;
+            const { token, user } = await authApi.signup(email, password);
 
             if (token) {
                 await login(token, user);

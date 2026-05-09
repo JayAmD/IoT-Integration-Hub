@@ -5,11 +5,16 @@ export const messageApi = {
     list: async (tenantId, params = {}) => {
         const query = new URLSearchParams(params).toString();
         const url = `/tenants/${tenantId}/messages${query ? `?${query}` : ''}`;
-        return await client(url, { method: 'GET' });
+        const response = await client(url, { method: 'GET' });
+        return {
+            items: response.data,
+            pagination: response.pagination
+        };
     },
 
     // Fetch a single message detail
     getById: async (tenantId, messageId) => {
-        return await client(`/tenants/${tenantId}/messages/${messageId}`, { method: 'GET' });
+        const response = await client(`/tenants/${tenantId}/messages/${messageId}`, { method: 'GET' });
+        return response.data;
     }
 };

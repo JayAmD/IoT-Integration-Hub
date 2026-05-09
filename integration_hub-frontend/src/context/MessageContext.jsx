@@ -27,11 +27,11 @@ export const MessageProvider = ({ children }) => {
 
         try {
             const params = { ...filters, ...overrides };
-            const response = await messageApi.list(activeTenantId, params);
+            const { items, pagination } = await messageApi.list(activeTenantId, params);
             
-            setMessages(response?.data || []);
-            if (response?.pagination) {
-                setPagination(response.pagination);
+            setMessages(items || []);
+            if (pagination) {
+                setPagination(pagination);
             }
         } catch (err) {
             console.error("Failed to fetch messages:", err);
