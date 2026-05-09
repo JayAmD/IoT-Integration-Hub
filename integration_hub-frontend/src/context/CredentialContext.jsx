@@ -5,40 +5,56 @@ import { useAuthContext } from './AuthContext.jsx';
 const CredentialContext = createContext(null);
 
 export const CredentialProvider = ({ children }) => {
-    const { activeTenantId } = useAuthContext();
+    const { activeTenantId: contextTenantId } = useAuthContext();
     const [credentials, setCredentials] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const loadCredentials = useCallback(async () => {
-        if (!activeTenantId) return;
+    const loadCredentials = useCallback(async (tenantId) => {
+        const targetId = tenantId || contextTenantId;
+        if (!targetId) return;
+        
         setIsLoading(true);
         try {
-            const response = await credentialApi.list(activeTenantId);
-            setCredentials(response?.data || []);
+            const data = await credentialApi.list(targetId);
+            setCredentials(data || []);
             setError(null);
         } catch (err) {
             setError(err.message || 'Failed to load credentials');
         } finally {
             setIsLoading(false);
         }
-    }, [activeTenantId]);
+    }, [contextTenantId]);
 
-    const addCredential = async (data) => {
-        const response = await credentialApi.create(activeTenantId, data);
-        setCredentials(prev => [...prev, response.data || response]);
-        return response.data || response;
+    const getCredentialDetail = async (tenantId, id) => {
+        const targetId = tenantId || contextTenantId;
+        return await credentialApi.getById(targetId, id);
     };
 
-    const updateCredential = async (id, data) => {
-        const response = await credentialApi.update(activeTenantId, id, data);
-        setCredentials(prev => prev.map(c => c._id === id ? (response.data || response) : c));
-        return response.data || response;
+    const addCredential = async (tenantId, data) => {
+        const targetId = tenantId || contextTenantId;
+        const newCred = await credentialApi.create(targetId, data);
+        setCredentials(prev => [...prev, newCred]);
+        return newCred;
     };
 
-    const deleteCredential = async (id) => {
-        await credentialApi.delete(activeTenantId, id);
+    const updateCredential = async (tenantId, id, data) => {
+        const targetId = tenantId || contextTenantId;
+        const updatedCred = await credentialApi.update(targetId, id, data);
+        setCredentials(prev => prev.map(c => c._id === id ? updatedCred : c));
+        return updatedCred;
+    };
+
+    const deleteCredential = async (tenantId, id) => {
+        const targetId = tenantId || contextTenantId;
+        await credentialApi.delete(targetId, id);
         setCredentials(prev => prev.filter(c => c._id !== id));
+    };
+
+    const revealSecret = async (tenantId, id) => {
+        const targetId = tenantId || contextTenantId;
+        const data = await credentialApi.reveal(targetId, id);
+        return data.secret;
     };
 
     const value = {
@@ -46,9 +62,11 @@ export const CredentialProvider = ({ children }) => {
         isLoading,
         error,
         loadCredentials,
+        getCredentialDetail,
         addCredential,
         updateCredential,
-        deleteCredential
+        deleteCredential,
+        revealSecret
     };
 
     return <CredentialContext.Provider value={value}>{children}</CredentialContext.Provider>;

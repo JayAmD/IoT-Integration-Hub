@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { Box, Snackbar, Alert, CircularProgress } from "@mui/material";
 
 import { useCredentialContext } from "../context/CredentialContext.jsx";
+import { useAuthContext } from "../context/AuthContext.jsx";
 import CredentialHeader from "../components/credential/CredentialHeader.jsx";
 import CredentialList from "../components/credential/CredentialList.jsx";
 import CredentialModal from "../components/credential/CredentialModal.jsx";
 
 export default function Credentials() {
+  const { activeTenantId } = useAuthContext();
   const { 
     credentials, 
     isLoading, 
@@ -14,7 +16,8 @@ export default function Credentials() {
     loadCredentials, 
     addCredential, 
     updateCredential, 
-    deleteCredential 
+    deleteCredential,
+    revealSecret 
   } = useCredentialContext();
 
   // Modals & Notifications
@@ -23,8 +26,8 @@ export default function Credentials() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   useEffect(() => {
-    loadCredentials();
-  }, [loadCredentials]);
+    loadCredentials(activeTenantId);
+  }, [loadCredentials, activeTenantId]);
 
   const showSnackbar = (message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
@@ -49,10 +52,10 @@ export default function Credentials() {
   const handleSaveCredential = async (data) => {
     try {
       if (editingCredential) {
-        await updateCredential(editingCredential._id, data);
+        await updateCredential(activeTenantId, editingCredential._id, data);
         showSnackbar('Credential updated successfully!');
       } else {
-        await addCredential(data);
+        await addCredential(activeTenantId, data);
         showSnackbar('Credential created successfully!');
       }
     } catch (err) {
@@ -64,11 +67,20 @@ export default function Credentials() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this credential?")) {
       try {
-        await deleteCredential(id);
+        await deleteCredential(activeTenantId, id);
         showSnackbar('Credential deleted successfully!');
       } catch (err) {
         showSnackbar(err.message || 'Failed to delete credential', 'error');
       }
+    }
+  };
+
+  const handleReveal = async (id) => {
+    try {
+      return await revealSecret(activeTenantId, id);
+    } catch (err) {
+      showSnackbar(err.message || 'Failed to reveal secret', 'error');
+      throw err;
     }
   };
 
@@ -94,6 +106,7 @@ export default function Credentials() {
           credentials={credentials}
           onEdit={handleOpenEditModal}
           onDelete={handleDelete}
+          onReveal={handleReveal}
         />
       )}
 

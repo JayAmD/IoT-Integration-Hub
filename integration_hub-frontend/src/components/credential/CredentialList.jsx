@@ -5,6 +5,7 @@ export default function CredentialList({
   credentials,
   onEdit,
   onDelete,
+  onReveal,
 }) {
   if (!credentials.length) {
     return (
@@ -22,6 +23,7 @@ export default function CredentialList({
           credential={credential}
           onEdit={onEdit}
           onDelete={onDelete}
+          onReveal={onReveal}
         />
       ))}
     </Stack>

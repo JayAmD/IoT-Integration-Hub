@@ -10,14 +10,15 @@ const updateCredential = async (req, res, next) => {
     if (name) updateData.name = name;
     if (provider) updateData.provider = provider;
     
-    // If a new secret is provided, re-encrypt it
+    // If a new secret is provided, re-encrypt it and increment key version
     if (secret) {
       updateData.encryptedData = encrypt(secret);
+      updateData.$inc = { keyVersion: 1 };
     }
 
     const credential = await Credential.findOneAndUpdate(
       { _id: id, tenantId: req.currentTenant._id },
-      { $set: updateData },
+      updateData,
       { new: true }
     );
 

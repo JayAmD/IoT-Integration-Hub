@@ -6,9 +6,10 @@ const deleteCredential = async (req, res, next) => {
     const { id } = req.params;
 
     // Check if being used by any endpoints
-    const inUse = await Endpoint.exists({ credentialId: id });
-    if (inUse) {
-      const error = new Error("Cannot delete credential because it is in use by one or more endpoints.");
+    const blockingEndpoints = await Endpoint.find({ credentialId: id }).select("name");
+    if (blockingEndpoints.length > 0) {
+      const names = blockingEndpoints.map(e => e.name).join(", ");
+      const error = new Error(`Cannot delete credential because it is in use by these endpoints: ${names}`);
       error.statusCode = 400;
       throw error;
     }
