@@ -37,14 +37,11 @@ export const startIngestionConsumer = async () => {
                 device.lastSeen = payload.receivedAt;
                 await device.save();
 
-                // 2. Find applicable Endpoints for this tenant (Optimized Query)
+                // 2. Find applicable Endpoints for this tenant (Group Match Required)
                 const matchingEndpoints = await Endpoint.find({
                     tenantId: device.tenantId,
                     isActive: true,
-                    $or: [
-                        { groupIds: { $size: 0 } },            // Global endpoints
-                        { groupIds: { $in: device.groupIds } }  // Group-specific endpoints
-                    ]
+                    groupIds: { $in: device.groupIds } // Only match if they share a group
                 });
 
                 // 3. Save to MongoDB (Outbox Pattern Step 1)
