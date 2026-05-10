@@ -59,7 +59,7 @@ const Header = () => {
                     {isLoggedIn ? (
                         <>
                             <Tooltip title="User Profile">
-                                <IconButton color="inherit">
+                                <IconButton color="inherit" onClick={() => navigate('/profile')}>
                                     <Avatar sx={{ bgcolor: 'secondary.main', width: 32, height: 32 }}>
                                         <PersonIcon fontSize="small" />
                                     </Avatar>

@@ -18,6 +18,7 @@ import Groups from "./routes/Groups.jsx";
 import Credentials from "./routes/Credentials.jsx";
 import Endpoints from "./routes/Endpoints.jsx";
 import Tenants from "./routes/Tenants.jsx";
+import Profile from "./routes/Profile.jsx";
 import LoginPage from "./routes/LoginPage.jsx";
 import SignupPage from "./routes/SignupPage.jsx";
 
@@ -55,6 +56,7 @@ function App() {
                       <Route element={<ProtectedRoute requireTenant={false} />}>
                         <Route element={<Layout />}>
                           <Route path="/tenants" element={<Tenants />} />
+                          <Route path="/profile" element={<Profile />} />
                         </Route>
                       </Route>
 
