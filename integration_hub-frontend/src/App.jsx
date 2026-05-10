@@ -13,6 +13,7 @@ import Layout from "./components/layout/Layout.jsx";
 import Devices from "./routes/Devices.jsx";
 import DeviceDetail from "./routes/DeviceDetail.jsx";
 import Messages from "./routes/Messages.jsx";
+import MessageDetail from "./routes/MessageDetail.jsx";
 import Groups from "./routes/Groups.jsx";
 import Credentials from "./routes/Credentials.jsx";
 import Endpoints from "./routes/Endpoints.jsx";
@@ -64,6 +65,7 @@ function App() {
                           <Route path="devices" element={<Devices />} />
                           <Route path="devices/:deviceId" element={<DeviceDetail />} />
                           <Route path="messages" element={<Messages />} />
+                          <Route path="messages/:messageId" element={<MessageDetail />} />
                           <Route path="credentials" element={<Credentials />} />
                           <Route path="groups" element={<Groups />} />
                           <Route path="endpoints" element={<Endpoints />} />

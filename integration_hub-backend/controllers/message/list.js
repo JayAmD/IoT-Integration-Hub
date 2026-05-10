@@ -9,13 +9,14 @@ const listMessages = async (req, res, next) => {
 
     // Optional filters
     if (deviceId) query.deviceId = deviceId;
-    if (status) query.status = status;
+    if (status) query["dispatches.status"] = status;
 
     const messages = await Message.find(query)
       .sort({ receivedAt: -1 }) // Newest first
       .skip((page - 1) * limit)
       .limit(Number(limit))
-      .populate("deviceId", "name"); // Include device name
+      .populate("deviceId", "name") // Include device name
+      .populate("dispatches.endpointId", "name url"); // Include endpoint info
 
     const total = await Message.countDocuments(query);
 

@@ -8,7 +8,9 @@ const getMessageDetail = async (req, res, next) => {
     const message = await Message.findOne({ 
       _id: id, 
       tenantId: req.currentTenant._id 
-    }).populate("deviceId", "name serialNumber");
+    })
+    .populate("deviceId", "name serialNumber")
+    .populate("dispatches.endpointId", "name url");
 
     if (!message) {
       const error = new Error("Message not found");

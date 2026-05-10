@@ -19,6 +19,23 @@ export const MessageProvider = ({ children }) => {
         limit: 10
     });
 
+    const fetchMessageById = useCallback(async (messageId) => {
+        if (!activeTenantId) return null;
+        
+        setIsLoading(true);
+        setError(null);
+        try {
+            const data = await messageApi.getById(activeTenantId, messageId);
+            return data;
+        } catch (err) {
+            console.error("Failed to fetch message detail:", err);
+            setError(err.message || "Failed to load message detail.");
+            return null;
+        } finally {
+            setIsLoading(false);
+        }
+    }, [activeTenantId]);
+
     const fetchMessages = useCallback(async (overrides = {}) => {
         if (!activeTenantId) return;
 
@@ -52,7 +69,8 @@ export const MessageProvider = ({ children }) => {
         error,
         filters,
         updateFilters,
-        fetchMessages
+        fetchMessages,
+        fetchMessageById
     };
 
     return <MessageContext.Provider value={value}>{children}</MessageContext.Provider>;

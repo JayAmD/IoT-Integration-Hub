@@ -5,7 +5,7 @@ export default function MessageList({
   messages,
   pagination,
   onPageChange,
-  onOpenDetail,
+  onViewDetail,
 }) {
   if (!messages.length) {
     return (
@@ -21,7 +21,7 @@ export default function MessageList({
         <MessageListItem
           key={message._id}
           message={message}
-          onOpenDetail={onOpenDetail}
+          onViewDetail={onViewDetail}
         />
       ))}
       

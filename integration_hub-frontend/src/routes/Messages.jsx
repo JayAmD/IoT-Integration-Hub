@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import { Box, CircularProgress, Alert } from "@mui/material";
 
 import { useMessageContext } from "../context/MessageContext.jsx";
@@ -8,6 +8,8 @@ import MessageList from "../components/message/MessageList.jsx";
 import MessageDetailModal from "../components/message/MessageDetailModal.jsx";
 
 export default function Messages() {
+  const navigate = useNavigate();
+  const { tenantId } = useParams();
   const [searchParams] = useSearchParams();
   const initialDeviceId = searchParams.get("deviceId") || "";
   
@@ -20,10 +22,6 @@ export default function Messages() {
     updateFilters, 
     fetchMessages 
   } = useMessageContext();
-
-  // Local state for the detail modal
-  const [selectedMessage, setSelectedMessage] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // --- HANDLERS ---
 
@@ -43,14 +41,8 @@ export default function Messages() {
     updateFilters({ page });
   };
 
-  const handleOpenDetail = (message) => {
-    setSelectedMessage(message);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedMessage(null);
+  const handleViewDetail = (id) => {
+    navigate(`/tenants/${tenantId}/messages/${id}`);
   };
 
   // --- EFFECTS ---
@@ -101,15 +93,9 @@ export default function Messages() {
           messages={messages}
           pagination={pagination}
           onPageChange={handlePageChange}
-          onOpenDetail={handleOpenDetail}
+          onViewDetail={handleViewDetail}
         />
       )}
-
-      <MessageDetailModal 
-        open={isModalOpen}
-        onClose={handleCloseModal}
-        message={selectedMessage}
-      />
     </Box>
   );
 }
