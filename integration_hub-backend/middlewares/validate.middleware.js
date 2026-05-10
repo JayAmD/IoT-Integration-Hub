@@ -1,18 +1,18 @@
+/**
+ * Zod validation middleware.
+ * This middleware validates the request body, params, and query against a schema.
+ */
 const validate = (schema) => (req, res, next) => {
   try {
-    const validated = schema.parse({
+    schema.parse({
       body: req.body,
       params: req.params,
       query: req.query,
     });
 
-    // Overwrite the request objects with the "cleaned" versions from Zod
-    req.body = validated.body;
-    req.params = validated.params;
-    req.query = validated.query;
-
     next();
   } catch (error) {
+    // If validation fails, Zod throws. We pass it to the error handler.
     next(error);
   }
 };
