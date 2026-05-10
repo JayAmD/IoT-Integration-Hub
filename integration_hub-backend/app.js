@@ -13,6 +13,7 @@ import endpointRouter from "./routes/endpoint.routes.js";
 import groupRouter from "./routes/group.routes.js";
 import credentialRouter from "./routes/credential.routes.js";
 import messageRouter from "./routes/message.routes.js";
+import userRouter from "./routes/user.routes.js";
 
 import addMessage from "./controllers/udp-server/addMessage.js";
 
@@ -37,6 +38,7 @@ app.use("/api/v1/tenants/:tenantId/groups", groupRouter);
 app.use("/api/v1/tenants/:tenantId/endpoints", endpointRouter);
 app.use("/api/v1/tenants/:tenantId/credentials", credentialRouter)
 app.use("/api/v1/tenants/:tenantId/messages", messageRouter);
+app.use("/api/v1/users", userRouter);
 
 app.use("/api/v1/udp-server/messages/:deviceId", addMessage);
 
