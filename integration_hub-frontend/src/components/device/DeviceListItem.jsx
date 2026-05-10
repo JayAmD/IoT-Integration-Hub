@@ -72,7 +72,7 @@ export default function DeviceListItem({
           <Typography variant="body2" color="text.secondary" noWrap>
             Last seen
           </Typography>
-          <Typography variant="body1" noWrap>
+          <Typography variant="body1" noWrap sx={{ color: device.lastSeenAt ? 'text.primary' : 'text.disabled', fontStyle: device.lastSeenAt ? 'normal' : 'italic' }}>
             {device.lastSeenAt ? new Date(device.lastSeenAt).toLocaleString() : 'Never'}
           </Typography>
         </Box>

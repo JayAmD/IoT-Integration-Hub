@@ -33,8 +33,8 @@ export const startIngestionConsumer = async () => {
                     return channel.ack(msg);
                 }
 
-                // Update lastSeen
-                device.lastSeen = payload.receivedAt;
+                // Update lastSeenAt
+                device.lastSeenAt = payload.receivedAt;
                 await device.save();
 
                 // 2. Find applicable Endpoints for this tenant (Group Match Required)

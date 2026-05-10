@@ -1,15 +1,7 @@
 import React, { useContext } from "react";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import SettingsIcon from "@mui/icons-material/Settings";
-import BusinessIcon from '@mui/icons-material/Business';
-import AnalyticsIcon from "@mui/icons-material/Analytics";
-import VpnKeyIcon from "@mui/icons-material/VpnKey";
-import GroupsIcon from "@mui/icons-material/Groups";
-import HubIcon from '@mui/icons-material/Hub';
 import { useNavigate } from "react-router-dom";
 import { SidebarContext } from "../../context/SidebarContext.jsx";
 import { useAuthContext } from "../../context/AuthContext.jsx";
-
 import {
   Drawer,
   List,
@@ -22,7 +14,12 @@ import {
   Toolbar,
 } from "@mui/material";
 
+import RouterIcon from "@mui/icons-material/Router";
+import SchemaIcon from "@mui/icons-material/Schema";
+import HubIcon from "@mui/icons-material/Hub";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import MessageIcon from "@mui/icons-material/Message";
+import BusinessIcon from '@mui/icons-material/Business';
 
 const Sidebar = () => {
   const { open, toggleOpen } = useContext(SidebarContext);
@@ -32,14 +29,12 @@ const Sidebar = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const menuItems = [
-    { label: "Devices", icon: <DashboardIcon />, path: `/tenants/${activeTenantId}/devices` },
-    { label: "Groups", icon: <GroupsIcon />, path: `/tenants/${activeTenantId}/groups` },
-    { label: "Messages", icon: <MessageIcon />, path: `/tenants/${activeTenantId}/messages` },
-    { label: "Credentials", icon: <VpnKeyIcon />, path: `/tenants/${activeTenantId}/credentials` },
-    { label: "Endpoints", icon: <HubIcon />, path: `/tenants/${activeTenantId}/endpoints` },
     { label: "Tenants", icon: <BusinessIcon />, path: "/tenants" },
-    { label: "Analytics", icon: <AnalyticsIcon />, path: `/tenants/${activeTenantId}/analytics` },
-    { label: "Settings", icon: <SettingsIcon />, path: `/tenants/${activeTenantId}/settings` },
+    { label: "Devices", icon: <RouterIcon />, path: `/tenants/${activeTenantId}/devices` },
+    { label: "Groups", icon: <SchemaIcon />, path: `/tenants/${activeTenantId}/groups` },
+    { label: "Messages", icon: <MessageIcon />, path: `/tenants/${activeTenantId}/messages` },
+    { label: "Endpoints", icon: <HubIcon />, path: `/tenants/${activeTenantId}/endpoints` },
+    { label: "Credentials", icon: <VpnKeyIcon />, path: `/tenants/${activeTenantId}/credentials` },
   ];
 
   const handleNavigate = (path) => {

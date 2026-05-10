@@ -30,7 +30,7 @@ const deviceSchema = new mongoose.Schema(
       ref: "Group",
       default: [],
     },
-    lastSeen: {
+    lastSeenAt: {
       type: Date,
     },
   }, {timestamps: true}

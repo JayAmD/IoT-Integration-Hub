@@ -70,10 +70,10 @@ const seedMessages = async () => {
     await Message.insertMany(mockMessages);
     console.log("Successfully seeded 4 mock messages.");
 
-    // 4. Update device lastSeen
-    device.lastSeen = mockMessages[0].receivedAt;
+    // 4. Update device lastSeenAt
+    device.lastSeenAt = mockMessages[0].receivedAt;
     await device.save();
-    console.log("Updated device lastSeen.");
+    console.log("Updated device lastSeenAt.");
 
     mongoose.connection.close();
   } catch (err) {

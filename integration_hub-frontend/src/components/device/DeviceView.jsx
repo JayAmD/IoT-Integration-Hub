@@ -70,6 +70,15 @@ export default function DeviceView({ device }) {
           )}
         </Box>
       </Box>
+
+      <Box>
+        <Typography variant="caption" color="text.secondary" fontWeight="bold" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          Last Seen
+        </Typography>
+        <Typography variant="body1" sx={{ mt: 0.5, color: device.lastSeenAt ? 'text.primary' : 'text.disabled', fontStyle: device.lastSeenAt ? 'normal' : 'italic' }}>
+          {device.lastSeenAt ? new Date(device.lastSeenAt).toLocaleString() : 'Never'}
+        </Typography>
+      </Box>
       
       <Box>
         <Typography variant="caption" color="text.secondary" fontWeight="bold" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
