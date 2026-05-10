@@ -40,7 +40,7 @@ export default function EndpointModal({ open, onClose, onSave, endpoint }) {
   });
 
   // Headers state as an array of objects { key, value } for easy UI mapping
-  const [headerPairs, setHeaderPairs] = useState([{ key: '', value: '' }]);
+  const [headerPairs, setHeaderPairs] = useState([{ key: 'Content-Type', value: 'application/json' }]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function EndpointModal({ open, onClose, onSave, endpoint }) {
         credentialId: '',
         isActive: true,
       });
-      setHeaderPairs([{ key: '', value: '' }]);
+      setHeaderPairs([{ key: 'Content-Type', value: 'application/json' }]);
     }
   }, [endpoint, open]);
 

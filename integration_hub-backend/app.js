@@ -17,6 +17,7 @@ import messageRouter from "./routes/message.routes.js";
 import addMessage from "./controllers/udp-server/addMessage.js";
 
 import { startIngestionConsumer } from "./services/messageIngestion.service.js";
+import { startDispatcherWorker } from "./services/dispatcher.service.js";
 
 const app = express();
 
@@ -46,8 +47,9 @@ app.listen(PORT, async () => {
 
   await connectToDatabase();
   
-  // Start RabbitMQ Ingestion Consumer
+  // Start RabbitMQ Consumers
   await startIngestionConsumer();
+  await startDispatcherWorker();
 });
 
 export default app;
