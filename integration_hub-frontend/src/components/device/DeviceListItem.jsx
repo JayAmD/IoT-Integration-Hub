@@ -1,3 +1,4 @@
+import React from "react";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Box, IconButton, Paper, Stack, Typography } from "@mui/material";
@@ -55,7 +56,9 @@ export default function DeviceListItem({
             {device.name}
           </Typography>
           <Typography variant="body2" color="text.secondary" noWrap>
-            {device.groups.map(group => group.name).join(', ')}
+            {device.groups && device.groups.length > 0 
+              ? device.groups.map(group => group.name).join(', ') 
+              : 'No groups assigned'}
           </Typography>
         </Box>
 

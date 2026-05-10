@@ -4,72 +4,61 @@ import { useNavigate } from "react-router-dom";
 import DevicesHeader from "../components/device/DevicesHeader.jsx";
 import DeviceList from "../components/device/DeviceList.jsx";
 import AddDeviceModal from "../components/device/AddDeviceModal.jsx";
-import { deviceApi } from "../api/deviceApi.js";
 import { useAuthContext } from "../context/AuthContext.jsx";
+import { useDeviceContext } from "../context/DeviceContext.jsx";
+import { useGroupContext } from "../context/GroupContext.jsx";
 
 export default function Devices() {
   const navigate = useNavigate();
   const { activeTenantId } = useAuthContext();
+  const { devices, isLoading: isDevicesLoading, error: contextError, fetchDevices, addDevice } = useDeviceContext();
+  const { groups, loadGroups } = useGroupContext();
   
-  // State
-  const [devices, setDevices] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  // Filters & Sorting
+  // Local Orchestration State
   const [sortBy, setSortBy] = useState("name-asc");
   const [groupFilter, setGroupFilter] = useState("all");
   const [searchValue, setSearchValue] = useState("");
   
-  // Modals & Notifications
+  // Modal & Submit State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-
-  // Load devices from backend
-  const fetchDevices = async () => {
-    if (!activeTenantId) {
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    try {
-      const deviceList = await deviceApi.list(activeTenantId);
-      setDevices(deviceList || []);
-    } catch (err) {
-      console.error("Failed to fetch devices:", err);
-      setError("Error: "+ err.message || "Failed to load devices. Please try again later.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // Initial load
   useEffect(() => {
-    fetchDevices();
+    if (activeTenantId) {
+      fetchDevices(activeTenantId);
+      loadGroups(activeTenantId).catch(err => console.error("Failed to load groups", err));
+    }
   }, [activeTenantId]);
 
-  const handleAddDeviceClick = () => {
+  const handleOpenAddModal = () => {
+    setSubmitError(null);
     setIsAddModalOpen(true);
   };
 
-  const handleDeviceAdded = () => {
-    // When a device is successfully added, we re-fetch the entire list from the backend.
-    // This is generally the best practice to ensure our UI is perfectly in sync with 
-    // the database, getting the real MongoDB IDs, timestamps, etc.
-    fetchDevices();
-    setSnackbarOpen(true);
+  const handleAddDevice = async (devicePayload) => {
+    setSubmitError(null);
+    setIsSubmitting(true);
+    try {
+      await addDevice(activeTenantId, devicePayload);
+      setSnackbarOpen(true);
+      setIsAddModalOpen(false);
+    } catch (err) {
+      console.error('Failed to add device:', err);
+      setSubmitError(err.message || 'Failed to add device. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+    if (reason === 'clickaway') return;
     setSnackbarOpen(false);
   };
 
   const handleOpenDetail = (deviceId) => {
-    // Ensure we are passing the correct MongoDB ID
     navigate(`/tenants/${activeTenantId}/devices/${deviceId}`);
   };
 
@@ -77,23 +66,20 @@ export default function Devices() {
     navigate(`/tenants/${activeTenantId}/messages?deviceId=${deviceId}`);
   };
 
-  // --- Filtering & Sorting Logic ---
+  // --- Filtering & Sorting Logic (Orchestration) ---
   const normalizedSearch = searchValue.trim().toLowerCase();
 
   const filteredDevices = devices.filter((device) => {
-    // Ensure safe access in case backend properties are null/undefined
-    const groupName = device.groupName || (device.groups && device.groups[0]) || "";
-    
-    const inSelectedGroup =
-      groupFilter === "all" || groupName.toLowerCase().replace(/\s+/g, "-") === groupFilter;
+    const hasGroupMatch = groupFilter === "all" || 
+      (device.groups && device.groups.some(g => g.name.toLowerCase().replace(/\s+/g, "-") === groupFilter));
 
     const matchesSearch =
       !normalizedSearch ||
       (device.name && device.name.toLowerCase().includes(normalizedSearch)) ||
-      (device.serialNumber && device.serialNumber.toLowerCase().includes(normalizedSearch)) ||
-      groupName.toLowerCase().includes(normalizedSearch);
+      (device.serialNumber && device.serialNumber.toString().includes(normalizedSearch)) ||
+      (device.groups && device.groups.some(g => g.name.toLowerCase().includes(normalizedSearch)));
 
-    return inSelectedGroup && matchesSearch;
+    return hasGroupMatch && matchesSearch;
   });
 
   const sortedDevices = [...filteredDevices].sort((first, second) => {
@@ -126,30 +112,32 @@ export default function Devices() {
         onSortByChange={setSortBy}
         groupFilter={groupFilter}
         onGroupFilterChange={setGroupFilter}
-        onAddDevice={handleAddDeviceClick}
+        onAddDevice={handleOpenAddModal}
       />
 
-      {isLoading ? (
+      {isDevicesLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
           <CircularProgress />
         </Box>
-      ) : error ? (
+      ) : contextError ? (
         <Typography color="error" sx={{ mt: 4, textAlign: 'center', fontWeight: 'bold' }}>
-          {error}
+          {contextError}
         </Typography>
       ) : (
         <DeviceList
           devices={sortedDevices}
-          onOpenDetail={(deviceId) => handleOpenDetail(deviceId)}
-          onOpenMessages={(deviceId) => handleOpenMessages(deviceId)}
+          onOpenDetail={handleOpenDetail}
+          onOpenMessages={handleOpenMessages}
         />
       )}
 
       <AddDeviceModal 
         open={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
-        onAddDevice={handleDeviceAdded}
-        tenantId={activeTenantId}
+        onAddDevice={handleAddDevice}
+        groups={groups}
+        isLoading={isSubmitting}
+        error={submitError}
       />
 
       <Snackbar 

@@ -1,13 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Box,
-  CircularProgress,
-  Typography,
-} from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import { deviceApi } from "../api/deviceApi.js";
-import { groupApi } from "../api/groupApi.js";
 import { useAuthContext } from "../context/AuthContext.jsx";
+import { useDeviceContext } from "../context/DeviceContext.jsx";
+import { useGroupContext } from "../context/GroupContext.jsx";
 
 import DeviceDetailHeader from "../components/device/DeviceDetailHeader.jsx";
 import DeviceDetailCard from "../components/device/DeviceDetailCard.jsx";
@@ -16,10 +12,11 @@ export default function DeviceDetail() {
   const { deviceId } = useParams();
   const navigate = useNavigate();
   const { activeTenantId } = useAuthContext();
+  const { getDeviceById, updateDevice, deleteDevice } = useDeviceContext();
+  const { groups: availableGroups, loadGroups } = useGroupContext();
   
-  // State
+  // Local Orchestration State
   const [device, setDevice] = useState(null);
-  const [availableGroups, setAvailableGroups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -35,19 +32,17 @@ export default function DeviceDetail() {
   // Load device and groups data on mount
   useEffect(() => {
     const loadData = async () => {
-      if (!activeTenantId) {
-        return;
-      }
+      if (!activeTenantId) return;
 
       setIsLoading(true);
       try {
-        const [deviceData, groupsData] = await Promise.all([
-          deviceApi.getById(activeTenantId, deviceId),
-          groupApi.list(activeTenantId)
+        // Fetch groups and the specific device in parallel
+        const [deviceData] = await Promise.all([
+          getDeviceById(activeTenantId, deviceId),
+          loadGroups(activeTenantId)
         ]);
 
         setDevice(deviceData);
-        setAvailableGroups(groupsData || []);
         setFormData({
           name: deviceData.name || '',
           claimToken: deviceData.claimToken || '',
@@ -96,7 +91,7 @@ export default function DeviceDetail() {
     setIsSaving(true);
     
     try {
-      const updatedData = await deviceApi.update(activeTenantId, deviceId, {
+      const updatedData = await updateDevice(activeTenantId, deviceId, {
         name: formData.name,
         claimToken: formData.claimToken,
         groupIds: formData.groupIds
@@ -114,7 +109,7 @@ export default function DeviceDetail() {
     if (window.confirm("Are you sure you want to delete this device?")) {
       setIsDeleting(true);
       try {
-        await deviceApi.delete(activeTenantId, deviceId);
+        await deleteDevice(activeTenantId, deviceId);
         navigate(`/tenants/${activeTenantId}/devices`);
       } catch (error) {
         console.error("Failed to delete device", error);

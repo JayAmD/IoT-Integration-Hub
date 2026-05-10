@@ -5,6 +5,7 @@ import { AuthProvider, useAuthContext } from "./context/AuthContext.jsx";
 import { GroupProvider } from "./context/GroupContext.jsx";
 import { MessageProvider } from "./context/MessageContext.jsx";
 import { TenantProvider } from "./context/TenantContext.jsx";
+import { DeviceProvider } from "./context/DeviceContext.jsx";
 import { CredentialProvider } from "./context/CredentialContext.jsx";
 import { EndpointProvider } from "./context/EndpointContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -40,8 +41,9 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <TenantProvider>
-            <CredentialProvider>
-              <EndpointProvider>
+            <DeviceProvider>
+              <CredentialProvider>
+                <EndpointProvider>
                 <MessageProvider>
                   <GroupProvider>
                     <Routes>
@@ -81,8 +83,9 @@ function App() {
                 </MessageProvider>
               </EndpointProvider>
             </CredentialProvider>
-          </TenantProvider>
-        </AuthProvider>
+          </DeviceProvider>
+        </TenantProvider>
+      </AuthProvider>
       </BrowserRouter>
     </Box>
   );
