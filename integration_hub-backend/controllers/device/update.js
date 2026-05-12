@@ -1,4 +1,5 @@
 import Device from "../../models/device.model.js";
+import { publishUdpConfigChanged } from "../../services/rabbit.service.js";
 
 const updateDevice = async (req, res, next) => {
   try {
@@ -18,6 +19,19 @@ const updateDevice = async (req, res, next) => {
         req.body,
         { returnDocument: 'after', runValidators: true }
     );
+
+    const claimTokenChanged =
+      Object.prototype.hasOwnProperty.call(req.body, "claimToken") &&
+      device.claimToken !== updatedDevice.claimToken;
+
+    if (claimTokenChanged) {
+      try {
+        await publishUdpConfigChanged({ reason: "device.update.claimToken" });
+      } catch (publishError) {
+        console.error("[DeviceUpdate] Failed to publish udp config notification:", publishError.message);
+      }
+    }
+
     res.status(200).json({ success: true, data: updatedDevice });
   } catch (e) {
     next(e);

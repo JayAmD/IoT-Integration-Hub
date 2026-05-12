@@ -1,10 +1,10 @@
 import amqp from 'amqplib';
-import { NODE_ENV } from '../config/env.js';
 
 let connection = null;
 let channel = null;
 
-const RABBIT_URL = process.env.RABBIT_URL || 'amqp://guest:guest@localhost:5672';
+import { RABBIT_URL } from '../config/env.js';
+const UDP_CONFIG_NOTIFY_EXCHANGE = 'udp_config_notify_exchange';
 
 /**
  * Shared connection manager for RabbitMQ
@@ -56,10 +56,30 @@ export const getRabbitChannel = async () => {
             }
         });
 
+        // UDP config notification exchange (notify-only; UDP server pulls config from API)
+        await channel.assertExchange(UDP_CONFIG_NOTIFY_EXCHANGE, 'fanout', { durable: true });
+
         console.log(`[RabbitService] Connected and Queues initialized (including Dispatch & Delay).`);
         return channel;
     } catch (error) {
         console.error("[RabbitService] Failed to initialize RabbitMQ:", error.message);
         throw error;
     }
+};
+
+export const publishUdpConfigChanged = async ({ reason }) => {
+    const activeChannel = await getRabbitChannel();
+
+    const payload = {
+        eventType: 'config.device_list.changed',
+        reason,
+        emittedAt: new Date().toISOString(),
+    };
+
+    activeChannel.publish(
+        UDP_CONFIG_NOTIFY_EXCHANGE,
+        '',
+        Buffer.from(JSON.stringify(payload)),
+        { persistent: true }
+    );
 };
