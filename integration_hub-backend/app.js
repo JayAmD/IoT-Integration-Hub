@@ -14,8 +14,7 @@ import groupRouter from "./routes/group.routes.js";
 import credentialRouter from "./routes/credential.routes.js";
 import messageRouter from "./routes/message.routes.js";
 import userRouter from "./routes/user.routes.js";
-
-import addMessage from "./controllers/udp-server/addMessage.js";
+import udpConfigRouter from "./routes/udpConfig.routes.js";
 
 import { startIngestionConsumer } from "./services/messageIngestion.service.js";
 import { startDispatcherWorker } from "./services/dispatcher.service.js";
@@ -39,8 +38,7 @@ app.use("/api/v1/tenants/:tenantId/endpoints", endpointRouter);
 app.use("/api/v1/tenants/:tenantId/credentials", credentialRouter)
 app.use("/api/v1/tenants/:tenantId/messages", messageRouter);
 app.use("/api/v1/users", userRouter);
-
-app.use("/api/v1/udp-server/messages/:deviceId", addMessage);
+app.use("/api/v1/config-device-list", udpConfigRouter);
 
 app.use(errorMiddleware)
 
