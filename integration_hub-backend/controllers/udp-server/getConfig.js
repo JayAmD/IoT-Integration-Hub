@@ -8,8 +8,9 @@ const getUdpConfig = async (req, res, next) => {
 
     const formattedDevices = devices.map((device) => ({
       id: String(device._id),
-      serialNumber: device.serialNumber,
+      serialNumber: Number(device.serialNumber),
       claimToken: device.claimToken,
+      decoder: "clime-decoder.yaml", // Static POC value
     }));
 
     res.status(200).json({

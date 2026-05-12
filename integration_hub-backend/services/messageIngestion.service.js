@@ -3,7 +3,7 @@ import Message from '../models/message.model.js';
 import Device from '../models/device.model.js';
 import Endpoint from '../models/endpoint.model.js';
 
-const INGEST_QUEUE = 'udp_parser_server_iot_msgs_queue';
+const INGEST_QUEUE = 'iot.telemetry.normalized';
 const DISPATCH_QUEUE = 'external_dispatch_queue';
 
 /**

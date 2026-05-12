@@ -31,7 +31,7 @@ export const getRabbitChannel = async () => {
         channel = await connection.createChannel();
         
         // Ensure queues exist
-        await channel.assertQueue('udp_parser_server_iot_msgs_queue', { durable: true });
+        await channel.assertQueue('iot.telemetry.normalized', { durable: true });
 
         // External Dispatch Infrastructure
         const DISPATCH_EXCHANGE = 'external_dispatch_exchange';
