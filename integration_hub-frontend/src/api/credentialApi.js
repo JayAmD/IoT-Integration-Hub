@@ -39,7 +39,7 @@ export const credentialApi = {
 
     // Reveal the plaintext secret
     reveal: async (tenantId, id) => {
-        const response = await client(`/tenants/${tenantId}/credentials/${id}/reveal`, { method: 'POST' });
+        const response = await client(`/tenants/${tenantId}/credentials/${id}/reveal`, { method: 'GET' });
         return response.data.secret;
     }
 };

@@ -18,8 +18,8 @@ credentialRouter.get("/", authenticate, authorizeTenant(["owner", "admin", "view
 // GET /api/v1/tenants/:tenantId/credentials/:id
 credentialRouter.get("/:id", authenticate, authorizeTenant(["owner", "admin", "viewer"]), getCredentialDetail);
 
-// POST /api/v1/tenants/:tenantId/credentials/:id/reveal
-credentialRouter.post("/:id/reveal", authenticate, authorizeTenant(["owner", "admin"]), revealCredentialSecret);
+// GET /api/v1/tenants/:tenantId/credentials/:id/reveal
+credentialRouter.get("/:id/reveal", authenticate, authorizeTenant(["owner", "admin"]), revealCredentialSecret);
 
 // POST /api/v1/tenants/:tenantId/credentials
 credentialRouter.post("/", authenticate, authorizeTenant(["owner", "admin"]), createCredential);
