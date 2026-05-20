@@ -1,6 +1,11 @@
 version: '3.8'
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: iot-rabbitmq
+    restart: always
+
   backend:
     build:
       context: ./integration_hub-backend
@@ -15,8 +20,10 @@ services:
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
       - API_KEYS_MASTER_KEY=${API_KEYS_MASTER_KEY}
       - UDP_SERVER_TO_MAIN_APP_API_KEY=${UDP_SERVER_TO_MAIN_APP_API_KEY}
-      - RABBIT_URL=${RABBIT_URL}
+      - RABBIT_URL=amqp://guest:guest@rabbitmq:5672
       - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost}
+    depends_on:
+      - rabbitmq
     restart: always
 
   frontend:
@@ -27,4 +34,22 @@ services:
         - VITE_API_URL=${VITE_API_URL:-http://localhost:5500/api/v1}
     ports:
       - "80:80"
+    restart: always
+
+  udp-server:
+    build:
+      context: ../IoT-Integration-Hub-udp-server
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002/udp"   # Map UDP port 5002 on host to 5002 inside the container
+    environment:
+      - NODE_ENV=production
+      - UDP_PORT=5002
+      - UDP_HOST=0.0.0.0
+      - RABBIT_URL=amqp://guest:guest@rabbitmq:5672
+      - MAIN_APP_CONFIG_URL=http://backend:5500/api/v1/config-device-list
+      - UDP_SERVER_TO_MAIN_APP_API_KEY=${UDP_SERVER_TO_MAIN_APP_API_KEY}
+    depends_on:
+      - rabbitmq
+      - backend
     restart: always
