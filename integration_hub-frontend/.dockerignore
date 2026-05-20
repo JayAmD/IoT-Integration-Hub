@@ -1,0 +1,15 @@
+node_modules/
+dist/
+npm-debug.log
+
+.idea/
+.vscode/
+
+.env*.local
+.git/
+.github/
+.gitignore
+
+Dockerfile
+.dockerignore
+nginx.conf

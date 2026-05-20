@@ -1,0 +1,24 @@
+# Dependency directories
+node_modules/
+npm-debug.log
+
+# IDEs and editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local environment variables
+.env*.local
+
+# Version control
+.git/
+.github/
+.gitignore
+
+# Docker configurations
+Dockerfile
+.dockerignore

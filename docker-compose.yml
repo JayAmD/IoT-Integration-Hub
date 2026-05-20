@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./integration_hub-backend
+      dockerfile: Dockerfile
+    ports:
+      - "5500:5500"
+    environment:
+      - NODE_ENV=production
+      - PORT=5500
+      - DB_URI=${DB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - API_KEYS_MASTER_KEY=${API_KEYS_MASTER_KEY}
+      - UDP_SERVER_TO_MAIN_APP_API_KEY=${UDP_SERVER_TO_MAIN_APP_API_KEY}
+      - RABBIT_URL=${RABBIT_URL}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost}
+    restart: always
+
+  frontend:
+    build:
+      context: ./integration_hub-frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-http://localhost:5500/api/v1}
+    ports:
+      - "80:80"
+    restart: always

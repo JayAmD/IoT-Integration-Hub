@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:5500/api/v1';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5500/api/v1';
 
 /**
  * A central utility for making API requests.
