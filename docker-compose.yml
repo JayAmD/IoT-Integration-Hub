@@ -5,6 +5,11 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: iot-rabbitmq
     restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+    ports:
+      - "127.0.0.1:15672:15672"
 
   backend:
     build:
@@ -20,7 +25,7 @@ services:
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
       - API_KEYS_MASTER_KEY=${API_KEYS_MASTER_KEY}
       - UDP_SERVER_TO_MAIN_APP_API_KEY=${UDP_SERVER_TO_MAIN_APP_API_KEY}
-      - RABBIT_URL=amqp://guest:guest@rabbitmq:5672
+      - RABBIT_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
       - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost}
     depends_on:
       - rabbitmq
@@ -46,7 +51,7 @@ services:
       - NODE_ENV=production
       - UDP_PORT=5002
       - UDP_HOST=0.0.0.0
-      - RABBIT_URL=amqp://guest:guest@rabbitmq:5672
+      - RABBIT_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
       - MAIN_APP_CONFIG_URL=http://backend:5500/api/v1/config-device-list
       - UDP_SERVER_TO_MAIN_APP_API_KEY=${UDP_SERVER_TO_MAIN_APP_API_KEY}
     depends_on:
