@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: iot-rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+    ports:
+      - "127.0.0.1:15672:15672"
+
+  backend:
+    image: jayamd/iot-integration-hub-backend:latest
+    ports:
+      - "5500:5500"
+    environment:
+      - NODE_ENV=production
+      - PORT=5500
+      - DB_URI=${DB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - API_KEYS_MASTER_KEY=${API_KEYS_MASTER_KEY}
+      - UDP_SERVER_TO_MAIN_APP_API_KEY=${UDP_SERVER_TO_MAIN_APP_API_KEY}
+      - RABBIT_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost}
+    depends_on:
+      - rabbitmq
+    restart: always
+
+  frontend:
+    image: jayamd/iot-integration-hub-frontend:latest
+    ports:
+      - "80:80"
+    restart: always
+
+  udp-server:
+    image: jayamd/iot-integration-hub-udp-parser-server:latest
+    ports:
+      - "5002:5002/udp" # Map UDP port 5002 on host to 5002 inside the container
+    environment:
+      - NODE_ENV=production
+      - UDP_PORT=5002
+      - UDP_HOST=0.0.0.0
+      - RABBIT_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
+      - MAIN_APP_CONFIG_URL=http://backend:5500/api/v1/config-device-list
+      - UDP_SERVER_TO_MAIN_APP_API_KEY=${UDP_SERVER_TO_MAIN_APP_API_KEY}
+    depends_on:
+      - rabbitmq
+      - backend
+    restart: always
