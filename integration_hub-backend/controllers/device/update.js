@@ -15,9 +15,9 @@ const updateDevice = async (req, res, next) => {
     }
 
     const updatedDevice = await Device.findOneAndUpdate(
-        { _id: req.params.id, tenantId: req.currentTenant._id },
-        req.body,
-        { returnDocument: 'after', runValidators: true }
+      { _id: req.params.id, tenantId: req.currentTenant._id },
+      req.body,
+      { returnDocument: 'after', runValidators: true }
     );
 
     const claimTokenChanged =
@@ -27,6 +27,7 @@ const updateDevice = async (req, res, next) => {
     if (claimTokenChanged) {
       try {
         await publishUdpConfigChanged({ reason: "device.update.claimToken" });
+        console.log("[DeviceUpdate] Published udp config notification - Claim Token Changed");
       } catch (publishError) {
         console.error("[DeviceUpdate] Failed to publish udp config notification:", publishError.message);
       }
