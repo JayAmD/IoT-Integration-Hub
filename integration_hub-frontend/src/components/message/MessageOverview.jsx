@@ -19,7 +19,7 @@ export default function MessageOverview({ message, tenantId }) {
           <Typography variant="caption" color="text.secondary" display="block">DEVICE SERIAL NUMBER</Typography>
           <MuiLink 
             component={RouterLink} 
-            to={`/tenants/${tenantId}/devices/${message.deviceId?._id || ''}`}
+            to={`/tenants/${tenantId}/devices/${message.device?._id || ''}`}
             sx={{ fontWeight: 600, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
           >
             {message.serialNumber}

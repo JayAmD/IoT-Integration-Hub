@@ -60,7 +60,7 @@ export default function MessageDispatchLog({ dispatches, tenantId }) {
                         to={`/tenants/${tenantId}/endpoints`}
                         sx={{ fontWeight: 600, color: 'text.primary', textDecoration: 'none', '&:hover': { color: 'primary.main', textDecoration: 'underline' } }}
                     >
-                      {dispatch.endpointId?.name || 'Deleted Endpoint'}
+                      {dispatch.endpoint?.name || 'Deleted Endpoint'}
                     </MuiLink>
                     <Chip 
                         label={dispatch.status.toUpperCase()} 
@@ -70,7 +70,7 @@ export default function MessageDispatchLog({ dispatches, tenantId }) {
                     />
                   </Stack>
                   <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>
-                    {dispatch.endpointId?.url}
+                    {dispatch.endpoint?.url}
                   </Typography>
                 </Box>
 

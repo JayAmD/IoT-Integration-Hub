@@ -1,4 +1,5 @@
 import Message from "../../models/message.model.js";
+import toMessageResponse from "../../helpers/toMessageResponse.js";
 
 const getMessageDetail = async (req, res, next) => {
   try {
@@ -18,7 +19,7 @@ const getMessageDetail = async (req, res, next) => {
       throw error;
     }
 
-    res.status(200).json({ success: true, data: message });
+    res.status(200).json({ success: true, data: toMessageResponse(message) });
   } catch (e) {
     next(e);
   }

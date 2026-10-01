@@ -1,4 +1,5 @@
 import Message from "../../models/message.model.js";
+import toMessageResponse from "../../helpers/toMessageResponse.js";
 
 const listMessages = async (req, res, next) => {
   try {
@@ -22,7 +23,7 @@ const listMessages = async (req, res, next) => {
 
     res.status(200).json({ 
       success: true, 
-      data: messages,
+      data: messages.map(toMessageResponse),
       pagination: {
         total,
         page: Number(page),

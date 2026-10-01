@@ -59,7 +59,7 @@ export default function MessageListItem({ message, onViewDetail }) {
               message.dispatches.map((d, idx) => (
                 <Tooltip 
                   key={idx} 
-                  title={`${d.endpointId?.name || 'Unknown Endpoint'}: ${d.status.toUpperCase()}`}
+                  title={`${d.endpoint?.name || 'Unknown Endpoint'}: ${d.status.toUpperCase()}`}
                   arrow
                 >
                   <Box 
