@@ -29,7 +29,8 @@ const updateEndpoint = async (req, res, next) => {
             { _id: req.params.id, tenantId: req.currentTenant._id },
             allowedUpdates,
             { returnDocument: 'after', runValidators: true }
-        ).populate('groupIds', 'name');
+        ).populate('groupIds', 'name')
+            .populate('credentialId', 'name authType');
 
         res.status(200).json({ success: true, data: updatedEndpoint });
     } catch (e) {

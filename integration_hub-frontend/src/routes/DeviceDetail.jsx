@@ -91,12 +91,17 @@ export default function DeviceDetail() {
     setIsSaving(true);
     
     try {
-      const updatedData = await updateDevice(activeTenantId, deviceId, {
-        name: formData.name,
-        claimToken: formData.claimToken,
-        groupIds: formData.groupIds
-      });
-      setDevice(updatedData);
+      const changes = {};
+      if (formData.name !== device.name) changes.name = formData.name;
+      if (formData.claimToken !== (device.claimToken || '')) changes.claimToken = formData.claimToken;
+      const originalGroups = (device.groupIds || []).map(group => group._id || group).sort();
+      if (JSON.stringify([...formData.groupIds].sort()) !== JSON.stringify(originalGroups)) {
+        changes.groupIds = formData.groupIds;
+      }
+      if (Object.keys(changes).length) {
+        const updatedData = await updateDevice(activeTenantId, deviceId, changes);
+        setDevice(updatedData);
+      }
       setIsEditMode(false);
     } catch (error) {
       console.error("Failed to save device", error);

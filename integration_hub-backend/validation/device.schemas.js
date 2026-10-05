@@ -73,7 +73,7 @@ export const deviceUpdateSchema = z.object({
     claimToken: z
       .string()
       .trim()
-     
+      .optional(),
   }),
 });
 

@@ -57,7 +57,7 @@ export default function EndpointModal({ open, onClose, onSave, endpoint }) {
         url: endpoint.url || '',
         method: endpoint.method || 'POST',
         groupIds: endpoint.groupIds ? endpoint.groupIds.map(g => g._id || g) : [],
-        credentialId: endpoint.credentialId ? (endpoint.credentialId._id || endpoint.credentialId) : '',
+        credentialId: endpoint.credentialId?._id || '',
         isActive: endpoint.isActive !== undefined ? endpoint.isActive : true,
       });
 
@@ -110,7 +110,28 @@ export default function EndpointModal({ open, onClose, onSave, endpoint }) {
         credentialId: formData.credentialId || null // Ensure empty string becomes null
       };
       
-      await onSave(dataToSave);
+      if (endpoint) {
+        const changes = {};
+        for (const field of ['name', 'url', 'method', 'isActive']) {
+          if (dataToSave[field] !== endpoint[field]) changes[field] = dataToSave[field];
+        }
+        const originalCredentialId = endpoint.credentialId?._id || null;
+        if (dataToSave.credentialId !== originalCredentialId) {
+          changes.credentialId = dataToSave.credentialId;
+        }
+        const originalGroups = (endpoint.groupIds || []).map(group => group._id || group).sort();
+        if (JSON.stringify([...dataToSave.groupIds].sort()) !== JSON.stringify(originalGroups)) {
+          changes.groupIds = dataToSave.groupIds;
+        }
+        const originalHeaders = endpoint.headers || {};
+        if (Object.keys(headers).length !== Object.keys(originalHeaders).length
+          || Object.entries(headers).some(([key, value]) => originalHeaders[key] !== value)) {
+          changes.headers = headers;
+        }
+        if (Object.keys(changes).length) await onSave(changes);
+      } else {
+        await onSave(dataToSave);
+      }
       onClose();
     } catch (error) {
       console.error("Save failed", error);

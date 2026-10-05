@@ -58,10 +58,12 @@ export const TenantListItem = ({
         }
         setIsSaving(true);
         try {
-            await onEdit(tenant._id, {
-                name: editName.trim(),
-                description: editDescription.trim(),
-            });
+            const changes = {};
+            if (editName.trim() !== tenant.name) changes.name = editName.trim();
+            if (editDescription.trim() !== (tenant.description || '')) {
+                changes.description = editDescription.trim();
+            }
+            if (Object.keys(changes).length) await onEdit(tenant._id, changes);
             setIsEditMode(false);
         } catch (err) {
             setEditError(err.message || 'Failed to update tenant');
