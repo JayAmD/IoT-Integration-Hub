@@ -1,4 +1,5 @@
 import Credential from "../../models/credential.model.js";
+import { publicCredential } from "../../services/credential.service.js";
 
 const getCredentialDetail = async (req, res, next) => {
   try {
@@ -14,7 +15,7 @@ const getCredentialDetail = async (req, res, next) => {
       throw error;
     }
 
-    res.status(200).json({ success: true, data: credential });
+    res.status(200).json({ success: true, data: publicCredential(credential) });
   } catch (e) {
     next(e);
   }

@@ -1,40 +1,53 @@
-import Credential from "../../models/credential.model.js";
-import { encrypt } from "../../services/secretManager.service.js";
+import Credential from '../../models/credential.model.js';
+import { publicCredential } from '../../services/credential.service.js';
+import { encrypt } from '../../services/secretManager.service.js';
 
 const updateCredential = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { name, provider, secret } = req.body;
+    try {
+        const credential = await Credential.findOne({
+            _id: req.params.id, tenantId: req.currentTenant._id
+        });
+        if (!credential) {
+            throw Object.assign(new Error('Credential not found'), { statusCode: 404 });
+        }
+        const input = req.body;
+        if (input.name !== undefined) credential.name = input.name;
+        if (input.authType !== undefined && input.authType !== credential.authType) {
+            const error = new Error('Authentication type cannot be changed. Create a new credential instead.');
+            error.statusCode = 400;
+            throw error;
+        }
 
-    const updateData = {};
-    if (name) updateData.name = name;
-    if (provider) updateData.provider = provider;
-    
-    // If a new secret is provided, re-encrypt it and increment key version
-    if (secret) {
-      updateData.encryptedData = encrypt(secret);
-      updateData.$inc = { keyVersion: 1 };
+        switch (credential.authType) {
+            case 'staticHeader':
+                if (input.authorizationHeaderKey !== undefined) {
+                    credential.authorizationHeaderKey = input.authorizationHeaderKey;
+                }
+                if (input.authorizationHeaderValue !== undefined) {
+                    credential.encryptedAuthorizationHeaderValue = encrypt(input.authorizationHeaderValue);
+                }
+                break;
+            case 'tokenLogin':
+                if (input.clientId !== undefined) {
+                    credential.encryptedClientId = encrypt(input.clientId);
+                }
+                if (input.clientSecret !== undefined) {
+                    credential.encryptedClientSecret = encrypt(input.clientSecret);
+                }
+                if (input.loginEndpoint !== undefined) credential.loginEndpoint = input.loginEndpoint;
+                if (input.loginTemplate !== undefined) credential.loginTemplate = input.loginTemplate;
+                if (input.responseTokenKey !== undefined) credential.responseTokenKey = input.responseTokenKey;
+                break;
+        }
+        credential.keyVersion += 1;
+        await credential.save();
+        res.status(200).json({ success: true, data: publicCredential(credential) });
+    } catch (error) {
+        if (error.name === 'VersionError') {
+            return next(Object.assign(new Error('Credential changed; reload it before editing.'), { statusCode: 409 }));
+        }
+        next(error);
     }
-
-    const credential = await Credential.findOneAndUpdate(
-      { _id: id, tenantId: req.currentTenant._id },
-      updateData,
-      { new: true }
-    );
-
-    if (!credential) {
-      const error = new Error("Credential not found");
-      error.statusCode = 404;
-      throw error;
-    }
-
-    const safeCredential = credential.toObject();
-    delete safeCredential.encryptedData;
-
-    res.status(200).json({ success: true, data: safeCredential });
-  } catch (e) {
-    next(e);
-  }
 };
 
 export default updateCredential;

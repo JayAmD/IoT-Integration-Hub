@@ -5,11 +5,11 @@ const revealCredentialSecret = async (req, res, next) => {
   try {
     const { id } = req.params;
     
-    // We explicitly select the encryptedData which is hidden by default
+    // We explicitly select the encryptedAuthorizationHeaderValue which is hidden by default
     const credential = await Credential.findOne({ 
       _id: id, 
       tenantId: req.currentTenant._id 
-    }).select("+encryptedData");
+    }).select("+encryptedAuthorizationHeaderValue");
 
     if (!credential) {
       const error = new Error("Credential not found");
@@ -17,7 +17,11 @@ const revealCredentialSecret = async (req, res, next) => {
       throw error;
     }
 
-    const plainText = decrypt(credential.encryptedData);
+    //TODO
+    if (credential.authType === 'tokenLogin') {
+      throw Object.assign(new Error('Token Login secrets cannot be revealed.'), { statusCode: 400 });
+    }
+    const plainText = decrypt(credential.encryptedAuthorizationHeaderValue);
 
     res.status(200).json({ 
       success: true, 

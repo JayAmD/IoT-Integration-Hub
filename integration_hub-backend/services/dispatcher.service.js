@@ -1,7 +1,7 @@
 import { getRabbitChannel } from './rabbit.service.js';
 import Message from '../models/message.model.js';
 import Endpoint from '../models/endpoint.model.js';
-import { getSecretValue } from './secretManager.service.js';
+import { getStaticAuthHeaders } from './secretManager.service.js';
 
 const DISPATCH_QUEUE = 'external_dispatch_queue'; //TODO put into env vars
 const DELAY_QUEUE = 'external_dispatch_delay_queue';
@@ -46,17 +46,17 @@ export const startDispatcherWorker = async () => {
                 }
 
                 // 2. Prepare headers 
-                const headers = Object.fromEntries(endpoint.headers || new Map());
+                const headers = new Headers(Object.fromEntries(endpoint.headers || new Map()));
 
                 // Add Authentication if credentialId is present
                 if (endpoint.credentialId) {
                     try {
-                        const secret = await getSecretValue(endpoint.credentialId);
-                        // TODO: Adjust logic if it needs to be something other than 'Bearer'
-                        headers['Authorization'] = `Bearer ${secret}`;
-                    } catch (err) {
-                        console.error(`[Dispatcher] Failed to resolve credential: ${err.message}`);
-                        // We skip adding the header, the request will likely fail 401/403 below.
+                        const authHeaders = await getStaticAuthHeaders(endpoint.credentialId, endpoint.tenantId);
+                        for (const [name, value] of Object.entries(authHeaders)) {
+                            headers.set(name, value);
+                        }
+                    } catch {
+                        throw new Error('Failed to prepare endpoint authentication.');
                     }
                 }
 

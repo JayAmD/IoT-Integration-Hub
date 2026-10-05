@@ -1,4 +1,5 @@
 import Endpoint from '../../models/endpoint.model.js';
+import { validateCredentialBelongsToTenant } from '../../services/credential.service.js';
 
 const updateEndpoint = async (req, res, next) => {
     try {
@@ -15,6 +16,7 @@ const updateEndpoint = async (req, res, next) => {
 
         // Explicit whitelist — clients cannot patch tenantId or internal fields.
         const { name, groupIds, url, method, headers, credentialId, isActive } = req.body;
+        await validateCredentialBelongsToTenant(credentialId, req.currentTenant._id);
         const allowedUpdates = { name, groupIds, url, method, headers, credentialId, isActive };
 
         // Strip out undefined values so partial patches work correctly

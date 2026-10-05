@@ -9,7 +9,7 @@ if (!API_KEYS_MASTER_KEY) {
     throw new Error("API_KEYS_MASTER_KEY is not set in .env file");
 }
 
-if (API_KEYS_MASTER_KEY.length !== 32) {
+if (Buffer.byteLength(API_KEYS_MASTER_KEY, 'utf8') !== 32) {
     throw new Error(`Master key must be exactly 32 bytes. Check your API_KEYS_MASTER_KEY environment variable.`);
 }
 
@@ -55,14 +55,12 @@ export const decrypt = (encryptedData) => {
     return plainText;
 };
 
- //A facade function to get a secret's value.
- //This makes the system extensible to upgrade to Azure Key Vault in the future.
-
-export const getSecretValue = async (credentialId) => {
-    const credential = await Credential.findById(credentialId).select("+encryptedData") ;
-    if (!credential) {
-        throw new Error(`Credential with ID ${credentialId} not found.`);
+// Temporary static-header resolver until the token-login service is integrated.
+export const getStaticAuthHeaders = async (credentialId, tenantId) => {
+    const credential = await Credential.findOne({ _id: credentialId, tenantId }).select('+encryptedAuthorizationHeaderValue');
+    if (!credential) throw new Error('Credential not found in this tenant.');
+    if (credential.authType !== 'staticHeader' || !credential.authorizationHeaderKey) {
+        throw new Error('Credential requires migration or Token Login dispatcher integration.');
     }
-
-    return decrypt(credential.encryptedData);
+    return { [credential.authorizationHeaderKey]: decrypt(credential.encryptedAuthorizationHeaderValue) };
 };

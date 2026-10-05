@@ -1,4 +1,5 @@
 import Endpoint from '../../models/endpoint.model.js';
+import { validateCredentialBelongsToTenant } from '../../services/credential.service.js';
 
 // Explicit destructure = "mass assignment protection".
 // If a client sends { tenantId: "someone-else", isActive: false } in the body,
@@ -6,6 +7,7 @@ import Endpoint from '../../models/endpoint.model.js';
 const createEndpoint = async (req, res, next) => {
     try {
         const { name, groupIds, url, method, headers, credentialId } = req.body;
+        await validateCredentialBelongsToTenant(credentialId, req.currentTenant._id);
 
         const endpoint = await Endpoint.create({
             name,

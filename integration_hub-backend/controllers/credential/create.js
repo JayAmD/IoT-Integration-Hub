@@ -1,25 +1,13 @@
-import Credential from "../../models/credential.model.js";
-import { encrypt } from "../../services/secretManager.service.js";
+import Credential from '../../models/credential.model.js';
+import { buildCredentialData, publicCredential } from '../../services/credential.service.js';
 
 const createCredential = async (req, res, next) => {
     try {
-        const { name, provider, secret } = req.body;
-
-        const encryptedData = encrypt(secret);
-
-        const credential = await Credential.create({
-            name,
-            provider,
-            encryptedData,
-            tenantId: req.currentTenant._id
-        });
-
-        const safeCredential = credential.toObject()
-        delete safeCredential.encryptedData
-
-        res.status(201).json({ success: true, data: safeCredential });
-    } catch (e) {
-        next(e);
+        const data = buildCredentialData(req.body);
+        const credential = await Credential.create({ ...data, tenantId: req.currentTenant._id });
+        res.status(201).json({ success: true, data: publicCredential(credential) });
+    } catch (error) {
+        next(error);
     }
 };
 

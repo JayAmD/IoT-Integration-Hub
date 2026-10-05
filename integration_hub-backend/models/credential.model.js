@@ -1,5 +1,11 @@
 import mongoose from "mongoose";
 
+const encryptedValueSchema = new mongoose.Schema({
+    ciphertext: { type: String, required: true },
+    iv: { type: String, required: true },
+    tag: { type: String, required: true }
+}, { _id: false });
+
 const credentialSchema = new mongoose.Schema(
     {
         name: {
@@ -8,19 +14,26 @@ const credentialSchema = new mongoose.Schema(
             trim: true,
             maxLength: [255, "Credential name must be less than 255 characters"],
         },
+        authType: {
+            type: String,
+            enum: ['staticHeader', 'tokenLogin'],
+            required: true,
+            immutable: true,
+        },
+        authorizationHeaderKey: { type: String },
+        // Compatibility metadata until the frontend removes the provider selector.
         provider: {
             type: String,
-            required: [true, "Provider name is required (e.g., 'custom', 'aws', 'azure')"],
+            default: 'custom',
             trim: true,
         },
-        encryptedData: {
-            type: {
-                ciphertext: {type: String, required: true},
-                iv: {type: String, required: true},
-                tag: {type: String, required: true},
-            },
-            select: false,
-        },
+        // Static Header value and Token Login secrets are encrypted separately.
+        encryptedAuthorizationHeaderValue: { type: encryptedValueSchema, select: false },
+        encryptedClientId: { type: encryptedValueSchema, select: false },
+        encryptedClientSecret: { type: encryptedValueSchema, select: false },
+        loginEndpoint: { type: String },
+        loginTemplate: { type: String },
+        responseTokenKey: { type: String },
         keyVersion: {
             type: Number,
             default: 1,
@@ -31,7 +44,7 @@ const credentialSchema = new mongoose.Schema(
             required: true,
         },
     },
-    {timestamps: true}
+    {timestamps: true, optimisticConcurrency: true}
 );
 
 const Credential = mongoose.model('Credential', credentialSchema);
