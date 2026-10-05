@@ -65,7 +65,7 @@ export default function CredentialListItem({
             </Typography>
           ) : (
             <Typography variant="body2" color="text.secondary" noWrap>
-                Provider: {credential.provider}
+                {credential.authType === 'staticHeader' ? 'Static Header' : 'Token Login'}
             </Typography>
           )}
         </Box>
@@ -80,7 +80,7 @@ export default function CredentialListItem({
         </Box>
 
         <Stack direction="row" spacing={0.5}>
-          <Tooltip title={revealedSecret ? "Hide Secret" : "Reveal Secret"}>
+          {credential.authType === 'staticHeader' && <Tooltip title={revealedSecret ? "Hide Secret" : "Reveal Secret"}>
             <IconButton 
                 onClick={() => onReveal(credential._id)} 
                 size="small" 
@@ -89,7 +89,7 @@ export default function CredentialListItem({
             >
               {revealedSecret ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
             </IconButton>
-          </Tooltip>
+          </Tooltip>}
           <Tooltip title="Edit">
             <IconButton onClick={() => onEdit(credential)} size="small" color="primary">
               <EditIcon fontSize="small" />

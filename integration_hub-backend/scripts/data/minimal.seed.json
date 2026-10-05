@@ -22,11 +22,9 @@
   },
   "credential": {
     "name": "Seed Credential",
-    "provider": "custom",
-    "secret": {
-      "apiKey": "seed-api-key",
-      "apiSecret": "seed-api-secret"
-    }
+    "authType": "staticHeader",
+    "authorizationHeaderKey": "X-API-Key",
+    "authorizationHeaderValue": "seed-api-key"
   },
   "device": {
     "name": "Seed Device",

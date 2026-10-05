@@ -12,7 +12,6 @@ export default function Credentials() {
   const { 
     credentials, 
     isLoading, 
-    error, 
     loadCredentials, 
     addCredential, 
     updateCredential, 
@@ -139,12 +138,12 @@ export default function Credentials() {
         />
       )}
 
-      <CredentialModal 
+      {isModalOpen && <CredentialModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveCredential}
         credential={editingCredential}
-      />
+      />}
 
       <Snackbar 
         open={snackbar.open} 

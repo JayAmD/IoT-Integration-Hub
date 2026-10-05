@@ -7,8 +7,7 @@ const fail = message => { throw Object.assign(new Error(message), { statusCode: 
 export function buildCredentialData(input) {
     const data = {
         name: input.name,
-        authType: input.authType,
-        provider: 'custom'
+        authType: input.authType
     };
 
     switch (input.authType) {

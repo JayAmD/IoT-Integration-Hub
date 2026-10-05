@@ -21,12 +21,6 @@ const credentialSchema = new mongoose.Schema(
             immutable: true,
         },
         authorizationHeaderKey: { type: String },
-        // Compatibility metadata until the frontend removes the provider selector.
-        provider: {
-            type: String,
-            default: 'custom',
-            trim: true,
-        },
         // Static Header value and Token Login secrets are encrypted separately.
         encryptedAuthorizationHeaderValue: { type: encryptedValueSchema, select: false },
         encryptedClientId: { type: encryptedValueSchema, select: false },

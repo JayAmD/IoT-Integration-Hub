@@ -11,7 +11,7 @@ const listEndpoints = async (req, res, next) => {
 
         const endpoints = await Endpoint.find(filter)
             .populate('groupIds', 'name')           // include group names
-            .populate('credentialId', 'name provider') // include credential label, not the secret
+            .populate('credentialId', 'name authType') // include credential label, not the secret
             .sort({ createdAt: -1 });
 
         res.status(200).json({ success: true, data: endpoints });

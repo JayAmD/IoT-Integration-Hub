@@ -199,9 +199,9 @@ export default function EndpointModal({ open, onClose, onSave, endpoint }) {
                 label="Authentication Credential (Optional)"
                 onChange={(e) => setFormData({ ...formData, credentialId: e.target.value })}
               >
-                <MenuItem value=""><em>None (Public API)</em></MenuItem>
+                <MenuItem value=""><em>No Authentication (Public API)</em></MenuItem>
                 {credentials.map(c => (
-                  <MenuItem key={c._id} value={c._id}>{c.name} ({c.provider})</MenuItem>
+                  <MenuItem key={c._id} value={c._id}>{c.name} ({c.authType === 'staticHeader' ? 'Static Header' : 'Token Login'})</MenuItem>
                 ))}
               </Select>
             </FormControl>

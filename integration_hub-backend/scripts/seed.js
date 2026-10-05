@@ -140,19 +140,11 @@ const createGroup = async (groupConfig, ownerEmail) => {
 };
 
 const createCredential = async (credentialConfig, ownerEmail) => {
-  const secret =
-    typeof credentialConfig.secret === "string"
-      ? credentialConfig.secret
-      : JSON.stringify(credentialConfig.secret);
-
   const credentialPayload = await request({
     method: "POST",
     route: `/api/v1/tenants/${context.tenantId}/credentials`,
     token: context.tokensByEmail[ownerEmail],
-    body: {
-      ...credentialConfig,
-      secret,
-    },
+    body: credentialConfig,
   });
 
   context.credentialId = credentialPayload.data._id;

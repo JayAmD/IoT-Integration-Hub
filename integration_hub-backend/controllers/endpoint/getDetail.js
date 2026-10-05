@@ -7,7 +7,7 @@ const getEndpointDetail = async (req, res, next) => {
             tenantId: req.currentTenant._id,
         })
             .populate('groupIds', 'name')
-            .populate('credentialId', 'name provider');
+            .populate('credentialId', 'name authType');
 
         if (!endpoint) {
             const error = new Error('Endpoint Not Found');
