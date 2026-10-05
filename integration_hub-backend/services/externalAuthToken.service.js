@@ -2,7 +2,7 @@ import Credential from '../models/credential.model.js';
 import { decrypt } from './secretManager.service.js';
 import { fillLoginTemplate } from '../helpers/fillLoginTemplate.js';
 
-// Perform one login and return its token. Caching and retries are separate concerns.
+// Perform one login and return its token. Caching and retries are possible extensions of the work.
 export async function getToken(credentialId, tenantId) {
     if (!credentialId || !tenantId) {
         throw new Error('Credential and tenant identifiers are required to obtain a token.');

@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 
-import Credential from '../models/credential.model.js';
 import {API_KEYS_MASTER_KEY} from '../config/env.js';
 
 // API_KEYS_MASTER_KEY for local encryption of API keys
@@ -53,14 +52,4 @@ export const decrypt = (encryptedData) => {
     plainText += decipher.final('utf8');
 
     return plainText;
-};
-
-// Temporary static-header resolver until the token-login service is integrated.
-export const getStaticAuthHeaders = async (credentialId, tenantId) => {
-    const credential = await Credential.findOne({ _id: credentialId, tenantId }).select('+encryptedAuthorizationHeaderValue');
-    if (!credential) throw new Error('Credential not found in this tenant.');
-    if (credential.authType !== 'staticHeader' || !credential.authorizationHeaderKey) {
-        throw new Error('Credential requires migration or Token Login dispatcher integration.');
-    }
-    return { [credential.authorizationHeaderKey]: decrypt(credential.encryptedAuthorizationHeaderValue) };
 };

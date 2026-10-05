@@ -1,7 +1,7 @@
 import { getRabbitChannel } from './rabbit.service.js';
 import Message from '../models/message.model.js';
 import Endpoint from '../models/endpoint.model.js';
-import { getStaticAuthHeaders } from './secretManager.service.js';
+import { getEndpointAuthHeaders } from './endpointAuth.service.js';
 
 const DISPATCH_QUEUE = 'external_dispatch_queue'; //TODO put into env vars
 const DELAY_QUEUE = 'external_dispatch_delay_queue';
@@ -51,7 +51,7 @@ export const startDispatcherWorker = async () => {
                 // Add Authentication if credentialId is present
                 if (endpoint.credentialId) {
                     try {
-                        const authHeaders = await getStaticAuthHeaders(endpoint.credentialId, endpoint.tenantId);
+                        const authHeaders = await getEndpointAuthHeaders(endpoint.credentialId, endpoint.tenantId);
                         for (const [name, value] of Object.entries(authHeaders)) {
                             headers.set(name, value);
                         }
