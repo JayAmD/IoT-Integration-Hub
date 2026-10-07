@@ -4,7 +4,7 @@ import { Router } from "express";
 //import { groupCreateSchema, groupGetSchema, groupListSchema, groupUpdateSchema, groupDeleteSchema } from "../validation/group.schemas.js";
 // TODO add validate
 import authenticate from "../middlewares/auth.middleware.js";
-import authorizeTenant from "../middlewares/tenant.middleware.js";
+import authorizeTenant from "../middlewares/authorizeTenant.middleware.js";
 
 import createGroup from "../controllers/group/create.js";
 import listGroups from "../controllers/group/list.js";

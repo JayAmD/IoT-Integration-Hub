@@ -4,7 +4,7 @@ import validate from "../middlewares/validate.middleware.js";
 // import { endpointCreateSchema, endpointGetSchema, endpointListSchema, endpointUpdateSchema, endpointDeleteSchema } from "../validation/endpoint.schemas.js";
 //TODO: ADD validate schemas
 import authenticate from "../middlewares/auth.middleware.js";
-import authorizeTenant from "../middlewares/tenant.middleware.js";
+import authorizeTenant from "../middlewares/authorizeTenant.middleware.js";
 
 import createEndpoint from "../controllers/endpoint/create.js";
 import listEndpoints from "../controllers/endpoint/list.js";

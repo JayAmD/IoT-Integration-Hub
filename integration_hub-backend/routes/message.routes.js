@@ -1,6 +1,6 @@
 import { Router } from "express";
 import authenticate from "../middlewares/auth.middleware.js";
-import authorizeTenant from "../middlewares/tenant.middleware.js";
+import authorizeTenant from "../middlewares/authorizeTenant.middleware.js";
 
 import listMessages from "../controllers/message/list.js";
 import getMessageDetail from "../controllers/message/getDetail.js";
