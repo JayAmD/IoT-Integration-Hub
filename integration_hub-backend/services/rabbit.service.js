@@ -1,4 +1,5 @@
 import amqp from 'amqplib';
+import { writeSync } from 'node:fs';
 
 let connection = null;
 let channel = null;
@@ -23,9 +24,13 @@ export const getRabbitChannel = async () => {
         });
 
         connection.on('close', () => {
-            console.warn("[RabbitService] Connection closed.");
-            connection = null;
-            channel = null;
+            // Flush the reason before exiting; Docker's restart policy restarts
+            // the backend and its consumers after the connection is lost.
+            try {
+                writeSync(2, "[RabbitService] RabbitMQ connection lost. Exiting backend (code 1) for restart by Docker.\n");
+            } finally {
+                process.exit(1);
+            }
         });
 
         channel = await connection.createChannel();
