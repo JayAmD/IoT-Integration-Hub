@@ -12,7 +12,7 @@ services:
       - "127.0.0.1:15672:15672"
 
   backend:
-    image: jayamd/iot-integration-hub-backend:latest
+    image: jayamd/iot-integration-hub-backend:v1.0.1
     ports:
       - "5500:5500"
     environment:
@@ -30,13 +30,13 @@ services:
     restart: always
 
   frontend:
-    image: jayamd/iot-integration-hub-frontend:latest
+    image: jayamd/iot-integration-hub-frontend:v1.0.1
     ports:
       - "80:80"
     restart: always
 
   udp-server:
-    image: jayamd/iot-integration-hub-udp-parser-server:latest
+    image: jayamd/iot-integration-hub-udp-parser-server:v1.0.1
     ports:
       - "5002:5002/udp" # Map UDP port 5002 on host to 5002 inside the container
     environment:
