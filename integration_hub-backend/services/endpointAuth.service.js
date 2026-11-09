@@ -2,7 +2,7 @@ import Credential from '../models/credential.model.js';
 import { decrypt } from './secretManager.service.js';
 import { getToken } from './externalAuthToken.service.js';
 
-export async function getEndpointAuthHeaders(credentialId, tenantId) {
+export async function getEndpointAuthHeaders(credentialId, tenantId, logContext = '') {
     if (!credentialId) return {};
     if (!tenantId) throw new Error('Tenant is required to prepare endpoint authentication.');
 
@@ -11,15 +11,18 @@ export async function getEndpointAuthHeaders(credentialId, tenantId) {
     if (!credential) throw new Error('Credential not found in this tenant.');
 
     switch (credential.authType) {
-        case 'staticHeader':
+        case 'staticHeader': {
             if (!credential.authorizationHeaderKey) {
                 throw new Error('Static Header credential has no header name.');
             }
-            return {
+            const headers = {
                 [credential.authorizationHeaderKey]: decrypt(credential.encryptedAuthorizationHeaderValue)
             };
+            console.log(`[Dispatcher] AUTH: ${logContext} Credential ${credentialId}: using staticHeader authentication.`);
+            return headers;
+        }
         case 'tokenLogin': {
-            const token = await getToken(credentialId, tenantId);
+            const token = await getToken(credentialId, tenantId, logContext);
             return { Authorization: `Bearer ${token}` };
         }
         default:

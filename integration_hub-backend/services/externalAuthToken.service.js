@@ -3,7 +3,7 @@ import { decrypt } from './secretManager.service.js';
 import { fillLoginTemplate } from '../helpers/fillLoginTemplate.js';
 
 // Perform one login and return its token. Caching and retries are possible extensions of the work.
-export async function getToken(credentialId, tenantId) {
+export async function getToken(credentialId, tenantId, logContext = '') {
     if (!credentialId || !tenantId) {
         throw new Error('Credential and tenant identifiers are required to obtain a token.');
     }
@@ -35,6 +35,7 @@ export async function getToken(credentialId, tenantId) {
     const body = fillLoginTemplate(credential.loginTemplate, { clientId, clientSecret });
 
     let response;
+    console.log(`[Dispatcher] AUTH: ${logContext} Credential ${credentialId}: requesting token (tokenLogin).`);
     try {
         response = await fetch(loginUrl, {
             method: 'POST',
@@ -44,9 +45,11 @@ export async function getToken(credentialId, tenantId) {
             signal: AbortSignal.timeout(10000)
         });
     } catch {
+        console.warn(`[Dispatcher] AUTH: ${logContext} Credential ${credentialId}: token request failed (network error, timeout or redirect).`);
         throw new Error('Token Login request failed: network error, timeout or redirect.');
     }
 
+    console.log(`[Dispatcher] AUTH: ${logContext} Credential ${credentialId}: token endpoint returned HTTP ${response.status}.`);
     if (!response.ok) throw new Error(`Token Login failed with HTTP ${response.status}.`);
 
     let result;
@@ -61,5 +64,6 @@ export async function getToken(credentialId, tenantId) {
         throw new Error('Token Login response does not contain a usable token in the configured field.');
     }
 
+    console.log(`[Dispatcher] AUTH: ${logContext} Credential ${credentialId}: token obtained; using Bearer authentication.`);
     return token;
 }

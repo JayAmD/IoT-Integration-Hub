@@ -45,23 +45,26 @@ export const startDispatcherWorker = async () => {
                     return channel.ack(msg);
                 }
 
+                const logContext = `Message ${messageId}, endpoint ${endpointId}, attempt ${dispatchLog.deliveryAttempts + 1}.`;
+
                 // 2. Prepare headers 
                 const headers = new Headers(Object.fromEntries(endpoint.headers || new Map()));
 
                 // Add Authentication if credentialId is present
                 if (endpoint.credentialId) {
                     try {
-                        const authHeaders = await getEndpointAuthHeaders(endpoint.credentialId, endpoint.tenantId);
+                        const authHeaders = await getEndpointAuthHeaders(endpoint.credentialId, endpoint.tenantId, logContext);
                         for (const [name, value] of Object.entries(authHeaders)) {
                             headers.set(name, value);
                         }
                     } catch {
+                        console.warn(`[Dispatcher] AUTH: ${logContext} Credential ${endpoint.credentialId}: failed to prepare authentication.`);
                         throw new Error('Failed to prepare endpoint authentication.');
                     }
                 }
 
                 // 3. Perform the HTTP Push using native fetch
-                console.log(`[Dispatcher] Sending message ${messageId} to ${endpoint.url} (Attempt ${dispatchLog.deliveryAttempts + 1})`);
+                console.log(`[Dispatcher] Sending message ${messageId} to ${endpoint.url} (Endpoint ${endpointId}, Attempt ${dispatchLog.deliveryAttempts + 1})`);
 
                 const response = await fetch(endpoint.url, {
                     method: endpoint.method,
@@ -70,6 +73,8 @@ export const startDispatcherWorker = async () => {
                     // Set a reasonable timeout (fetch doesn't have one by default, using AbortController is better but keeping it simple)
                     signal: AbortSignal.timeout(10000)
                 });
+
+                console.log(`[Dispatcher] RESPONSE: ${logContext} HTTP ${response.status}.`);
 
                 if (response.ok) {
                     // SUCCESS: Atomic update of only this endpoint's status, not saving the whole message as to not overwrite others workers dispatch logs
@@ -86,7 +91,7 @@ export const startDispatcherWorker = async () => {
                     );
 
                     channel.ack(msg);
-                    console.log(`[Dispatcher] SUCCESS: Message ${messageId} delivered to ${endpoint.name}`);
+                    console.log(`[Dispatcher] SUCCESS: Message ${messageId} delivered to ${endpoint.name} (Endpoint ${endpointId}, HTTP ${response.status}, Attempt ${dispatchLog.deliveryAttempts + 1})`);
                 } else {
                     // HTTP FAILURE (4xx or 5xx)
                     const errorText = await response.text();
@@ -107,7 +112,7 @@ export const startDispatcherWorker = async () => {
                         );
 
                         channel.ack(msg);
-                        console.error(`[Dispatcher] PERMANENT FAILURE: ${errorMessage}`);
+                        console.error(`[Dispatcher] PERMANENT FAILURE: ${logContext} ${errorMessage}`);
                     } else {
                         // SERVER ERROR (5xx): We 'throw' to stop this block and jump to the catch-block below.
                         // The catch-block handles the exponential backoff logic.
@@ -117,7 +122,7 @@ export const startDispatcherWorker = async () => {
 
             } catch (error) {
                 // NETWORK ERROR or 5xx (Jumped here from 'throw' above or fetch rejection)
-                console.error(`[Dispatcher] TEMPORARY FAILURE for message ${messageId}: ${error.message}`);
+                console.error(`[Dispatcher] TEMPORARY FAILURE for message ${messageId}, endpoint ${endpointId}: ${error.message}`);
 
                 // 1. Increment attempts and log error atomically
                 const updatedMessage = await Message.findOneAndUpdate(
@@ -141,7 +146,7 @@ export const startDispatcherWorker = async () => {
                         { $set: { "dispatches.$.status": 'failed' } }
                     );
                     channel.ack(msg);
-                    console.error(`[Dispatcher] Max retries reached for message ${messageId}`);
+                    console.error(`[Dispatcher] Max retries reached for message ${messageId}, endpoint ${endpointId}`);
                 } else {
                     // 2. Snooze: Calculate Delay (10 * 2^attempts)
                     const delayMs = Math.pow(2, log.deliveryAttempts - 1) * 10000;
@@ -153,7 +158,7 @@ export const startDispatcherWorker = async () => {
                     });
 
                     channel.ack(msg);
-                    console.log(`[Dispatcher] SNOOZED: Retrying message ${messageId} in ${delayMs / 1000}s`);
+                    console.log(`[Dispatcher] SNOOZED: Retrying message ${messageId}, endpoint ${endpointId} in ${delayMs / 1000}s`);
                 }
             }
         }, { noAck: false });
