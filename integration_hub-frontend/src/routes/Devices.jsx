@@ -62,8 +62,8 @@ export default function Devices() {
     navigate(`/tenants/${activeTenantId}/devices/${deviceId}`);
   };
 
-  const handleOpenMessages = (deviceId) => {
-    navigate(`/tenants/${activeTenantId}/messages?deviceId=${deviceId}`);
+  const handleOpenMessages = (serialNumber) => {
+    navigate(`/tenants/${activeTenantId}/messages?serialNumber=${serialNumber}`);
   };
 
   // --- Filtering & Sorting Logic (Orchestration) ---

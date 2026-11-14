@@ -13,7 +13,7 @@ export const MessageProvider = ({ children }) => {
     
     // Filters
     const [filters, setFilters] = useState({
-        deviceId: '',
+        serialNumber: '',
         status: '',
         page: 1,
         limit: 10

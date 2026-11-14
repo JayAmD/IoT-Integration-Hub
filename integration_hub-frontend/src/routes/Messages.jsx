@@ -11,7 +11,7 @@ export default function Messages() {
   const navigate = useNavigate();
   const { tenantId } = useParams();
   const [searchParams] = useSearchParams();
-  const initialDeviceId = searchParams.get("deviceId") || "";
+  const initialSerialNumber = searchParams.get("serialNumber") || "";
   
   const { 
     messages, 
@@ -30,7 +30,7 @@ export default function Messages() {
   };
 
   const handleSearchChange = (val) => {
-    updateFilters({ deviceId: val });
+    updateFilters({ serialNumber: val });
   };
 
   const handleStatusFilterChange = (val) => {
@@ -47,12 +47,10 @@ export default function Messages() {
 
   // --- EFFECTS ---
 
-  // Sync deviceId from URL into filters on mount
+  // Sync the serial number from the device link into the search filter
   useEffect(() => {
-    if (initialDeviceId) {
-      updateFilters({ deviceId: initialDeviceId });
-    }
-  }, [initialDeviceId]);
+    updateFilters({ serialNumber: initialSerialNumber });
+  }, [initialSerialNumber]);
 
   // Fetch messages whenever filters change
   useEffect(() => {
@@ -71,7 +69,7 @@ export default function Messages() {
       }}
     >
       <MessagesHeader 
-        searchValue={filters.deviceId}
+        searchValue={filters.serialNumber}
         onSearchChange={handleSearchChange}
         statusFilter={filters.status || 'all'}
         onStatusFilterChange={handleStatusFilterChange}

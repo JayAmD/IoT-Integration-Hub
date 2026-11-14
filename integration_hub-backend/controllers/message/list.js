@@ -3,13 +3,20 @@ import toMessageResponse from "../../helpers/toMessageResponse.js";
 
 const listMessages = async (req, res, next) => {
   try {
-    const { deviceId, status, page = 1, limit = 10 } = req.query;
+    const { deviceId, serialNumber, status, page = 1, limit = 10 } = req.query;
     
     // Filter by tenant (from authorizeTenant middleware)
     const query = { tenantId: req.currentTenant._id };
 
     // Optional filters
     if (deviceId) query.deviceId = deviceId;
+    if (serialNumber !== undefined && serialNumber !== '') {
+      if (typeof serialNumber !== 'string' || !/^\d+$/.test(serialNumber.trim())
+        || !Number.isSafeInteger(Number(serialNumber.trim()))) {
+        throw Object.assign(new Error('Serial number must be a non-negative integer.'), { statusCode: 400 });
+      }
+      query.serialNumber = Number(serialNumber.trim());
+    }
     if (status) query["dispatches.status"] = status;
 
     const messages = await Message.find(query)

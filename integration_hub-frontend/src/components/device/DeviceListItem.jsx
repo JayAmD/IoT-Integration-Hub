@@ -12,7 +12,7 @@ export default function DeviceListItem({
 
   const handleMessagesClick = (event) => {
     event.stopPropagation();
-    onOpenMessages(deviceId);
+    onOpenMessages(device.serialNumber);
   };
 
   const handleKeyDown = (event) => {
