@@ -30,7 +30,6 @@ const SignupPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     
-    // Use our new context
     const { login } = useAuthContext();
 
     const handleSignup = async (e) => {

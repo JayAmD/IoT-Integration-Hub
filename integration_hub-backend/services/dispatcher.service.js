@@ -33,7 +33,7 @@ export const startDispatcherWorker = async () => {
                     return channel.ack(msg);
                 }
 
-                // Find the specific dispatch log for this endpoint
+                // Find the current delivery record for this endpoint
                 const dispatchLog = message.dispatches.find(d => d.endpointId.toString() === endpointId);
                 if (!dispatchLog) {
                     console.warn(`[Dispatcher] Dispatch log entry not found for endpoint ${endpointId}`);
@@ -70,14 +70,14 @@ export const startDispatcherWorker = async () => {
                     method: endpoint.method,
                     headers: headers,
                     body: JSON.stringify(message.data),
-                    // Set a reasonable timeout (fetch doesn't have one by default, using AbortController is better but keeping it simple)
+                    // Abort the request after 10 seconds.
                     signal: AbortSignal.timeout(10000)
                 });
 
                 console.log(`[Dispatcher] RESPONSE: ${logContext} HTTP ${response.status}.`);
 
                 if (response.ok) {
-                    // SUCCESS: Atomic update of only this endpoint's status, not saving the whole message as to not overwrite others workers dispatch logs
+                    // Update only this endpoint's delivery record to preserve concurrent updates to other endpoints.
                     await Message.updateOne(
                         { _id: messageId, "dispatches.endpointId": endpointId },
                         {

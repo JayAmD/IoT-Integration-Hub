@@ -17,7 +17,7 @@ export function fillLoginTemplate(loginTemplate, variables) {
         throw new Error('loginTemplate must be a JSON object.');
     }
 
-    // Main tamplating
+    // Substitute credential values into the validated template.
     const fillTemplate = createTemplate(templateObject);
 
     const loginBody = fillTemplate(variables);

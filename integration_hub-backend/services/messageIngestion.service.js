@@ -29,7 +29,7 @@ export const startIngestionConsumer = async () => {
 
                 if (!device) {
                     console.error(`[Ingestion] Device with ID ${payload.deviceId} not found in Database!`);
-                    // We ACK anyway to remove it from queue, or move to DLX (Dead Letter Exchange)
+                    // Discard telemetry for an unknown device by acknowledging the queue message.
                     return channel.ack(msg);
                 }
 
@@ -44,7 +44,7 @@ export const startIngestionConsumer = async () => {
                     groupIds: { $in: device.groupIds } // Only match if they share a group
                 });
 
-                // 3. Save to MongoDB (Outbox Pattern Step 1)
+                // 3. Store telemetry and pending delivery records in MongoDB
                 const newMessage = await Message.create({
                     deviceId: device._id,
                     tenantId: device.tenantId,
@@ -57,7 +57,7 @@ export const startIngestionConsumer = async () => {
                     }))
                 });
 
-                // 4. Publish to Dispatch Queue for EACH endpoint (Outbox Pattern Step 2)
+                // 4. Publish a delivery task for each matching endpoint
                 for (const ep of matchingEndpoints) {
                     const dispatchPayload = {
                         messageId: newMessage._id,

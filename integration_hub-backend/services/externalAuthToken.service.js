@@ -2,7 +2,7 @@ import Credential from '../models/credential.model.js';
 import { decrypt } from './secretManager.service.js';
 import { fillLoginTemplate } from '../helpers/fillLoginTemplate.js';
 
-// Perform one login and return its token. Caching and retries are possible extensions of the work.
+// Obtain a fresh token for each call; tokens are not cached.
 export async function getToken(credentialId, tenantId, logContext = '') {
     if (!credentialId || !tenantId) {
         throw new Error('Credential and tenant identifiers are required to obtain a token.');
@@ -15,7 +15,7 @@ export async function getToken(credentialId, tenantId, logContext = '') {
         throw new Error('This credential does not use Token Login.');
     }
 
-    // Do not transmit login secrets over plaintext HTTP or follow redirects. TODO
+    // Require HTTPS without embedded credentials; the request below also rejects redirects.
     let loginUrl;
     try {
         loginUrl = new URL(credential.loginEndpoint);

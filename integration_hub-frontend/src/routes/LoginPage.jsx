@@ -29,7 +29,6 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  // Use our new context
   const { login } = useAuthContext();
 
   const handleLogin = async (e) => {
