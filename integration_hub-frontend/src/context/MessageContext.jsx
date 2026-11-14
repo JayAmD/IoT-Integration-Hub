@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useCallback } from 'react';
+import React, { createContext, useState, useContext, useCallback, useRef } from 'react';
 import { messageApi } from '../api/messageApi.js';
 import { useAuthContext } from './AuthContext.jsx';
 
@@ -10,6 +10,7 @@ export const MessageProvider = ({ children }) => {
     const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const latestListRequest = useRef(0);
     
     // Filters
     const [filters, setFilters] = useState({
@@ -38,6 +39,7 @@ export const MessageProvider = ({ children }) => {
 
     const fetchMessages = useCallback(async (overrides = {}) => {
         if (!activeTenantId) return;
+        const requestId = ++latestListRequest.current;
 
         setIsLoading(true);
         setError(null);
@@ -45,16 +47,19 @@ export const MessageProvider = ({ children }) => {
         try {
             const params = { ...filters, ...overrides };
             const { items, pagination } = await messageApi.list(activeTenantId, params);
+            // Only the latest list request may update the displayed results.
+            if (requestId !== latestListRequest.current) return;
             
             setMessages(items || []);
             if (pagination) {
                 setPagination(pagination);
             }
         } catch (err) {
+            if (requestId !== latestListRequest.current) return;
             console.error("Failed to fetch messages:", err);
             setError(err.message || "Failed to load messages.");
         } finally {
-            setIsLoading(false);
+            if (requestId === latestListRequest.current) setIsLoading(false);
         }
     }, [activeTenantId, filters]);
 
