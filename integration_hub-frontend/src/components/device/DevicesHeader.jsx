@@ -20,6 +20,7 @@ export default function DevicesHeader(props) {
         sortBy,
         onSortByChange,
         groupFilter,
+        groups,
         onGroupFilterChange,
         onAddDevice,
     } = props
@@ -95,9 +96,9 @@ export default function DevicesHeader(props) {
                             sx={{ borderRadius: 2 }}
                         >
                             <MenuItem value="all">All groups</MenuItem>
-                            <MenuItem value="forest-nodes">Forest nodes</MenuItem>
-                            <MenuItem value="preemptive-maintenance">Preemptive maintenance</MenuItem>
-                            <MenuItem value="greenhouse">Greenhouse</MenuItem>
+                            {groups.map(group => (
+                                <MenuItem key={group._id} value={group._id}>{group.name}</MenuItem>
+                            ))}
                         </Select>
                     </FormControl>
                 </Stack>

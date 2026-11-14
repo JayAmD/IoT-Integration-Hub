@@ -27,6 +27,7 @@ export default function Devices() {
 
   // Initial load
   useEffect(() => {
+    setGroupFilter("all");
     if (activeTenantId) {
       fetchDevices(activeTenantId);
       loadGroups(activeTenantId).catch(err => console.error("Failed to load groups", err));
@@ -71,7 +72,7 @@ export default function Devices() {
 
   const filteredDevices = devices.filter((device) => {
     const hasGroupMatch = groupFilter === "all" || 
-      (device.groups && device.groups.some(g => g.name.toLowerCase().replace(/\s+/g, "-") === groupFilter));
+      (device.groups && device.groups.some(g => g._id === groupFilter));
 
     const matchesSearch =
       !normalizedSearch ||
@@ -111,6 +112,7 @@ export default function Devices() {
         sortBy={sortBy}
         onSortByChange={setSortBy}
         groupFilter={groupFilter}
+        groups={groups}
         onGroupFilterChange={setGroupFilter}
         onAddDevice={handleOpenAddModal}
       />
