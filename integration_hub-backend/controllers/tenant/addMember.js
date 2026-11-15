@@ -3,6 +3,13 @@ import User from "../../models/user.model.js";
 const addMember = async (req, res, next) => {
   try {
     const { email, role } = req.body;
+    const memberRole = role || "viewer";
+
+    if (req.currentUserTenantRole === "admin" && memberRole !== "viewer") {
+      const error = new Error("Admins can only add members with the viewer role");
+      error.statusCode = 403;
+      throw error;
+    }
 
     // Look up user by email
     const userToAdd = await User.findOne({ email: email.trim().toLowerCase() });
@@ -28,7 +35,7 @@ const addMember = async (req, res, next) => {
     // Add member to the tenant from middleware context
     req.currentTenant.members.push({
       userId,
-      role: role || "viewer",
+      role: memberRole,
     });
 
     await req.currentTenant.save();
