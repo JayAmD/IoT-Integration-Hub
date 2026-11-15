@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useCallback } from 'react';
 import { groupApi } from '../api/groupApi.js';
 
 // 1. Create the context
@@ -9,7 +9,7 @@ export const GroupProvider = ({ children }) => {
     const [groups, setGroups] = useState([]);
 
     // Load all groups
-    const loadGroups = async (tenantId) => {
+    const loadGroups = useCallback(async (tenantId) => {
         try {
             const groupList = await groupApi.list(tenantId);
             setGroups(groupList || []);
@@ -17,7 +17,7 @@ export const GroupProvider = ({ children }) => {
             console.error("Failed to load groups:", err);
             throw err;
         }
-    };
+    }, []);
 
     // Add a new group
     const addGroup = async (tenantId, name) => {
