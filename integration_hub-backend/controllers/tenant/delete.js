@@ -6,6 +6,7 @@ import Endpoint from "../../models/endpoint.model.js";
 import Group from "../../models/group.model.js";
 import Credential from "../../models/credential.model.js";
 import Message from "../../models/message.model.js";
+import { publishUdpConfigChanged } from "../../services/rabbit.service.js";
 
 const deleteTenant = async (req, res, next) => {
   let session = null;
@@ -28,6 +29,12 @@ const deleteTenant = async (req, res, next) => {
 
     await session.commitTransaction();
     session.endSession();
+
+    try {
+      await publishUdpConfigChanged({ reason: "tenant.delete" });
+    } catch (publishError) {
+      console.error("[TenantDelete] Failed to publish udp config notification:", publishError.message);
+    }
 
     res.status(200).json({
       success: true,
