@@ -13,9 +13,14 @@ const updateGroup = async (req, res, next) => {
       throw error;
     }
 
+    const updates = {};
+    if (req.body.name !== undefined) {
+      updates.name = req.body.name;
+    }
+
     const updatedGroup = await Group.findOneAndUpdate(
         { _id: req.params.id, tenantId: req.currentTenant._id },
-        req.body,
+        updates,
         { returnDocument: 'after', runValidators: true }
     );
     res.status(200).json({ success: true, data: updatedGroup });

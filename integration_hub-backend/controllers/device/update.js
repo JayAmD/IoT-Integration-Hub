@@ -14,9 +14,16 @@ const updateDevice = async (req, res, next) => {
       throw error;
     }
 
+    const updates = {};
+    for (const key of ["name", "claimToken", "groupIds"]) {
+      if (req.body[key] !== undefined) {
+        updates[key] = req.body[key];
+      }
+    }
+
     const updatedDevice = await Device.findOneAndUpdate(
       { _id: req.params.id, tenantId: req.currentTenant._id },
-      req.body,
+      updates,
       { returnDocument: 'after', runValidators: true }
     );
 
