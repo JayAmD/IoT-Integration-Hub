@@ -15,7 +15,10 @@ const createDevice = async (req, res, next) => {
       console.error("[DeviceCreate] Failed to publish udp config notification:", publishError.message);
     }
 
-    res.status(201).json({ success: true, data: device });
+    await device.populate("groupIds", "name");
+    const { groupIds, ...deviceData } = device.toObject();
+
+    res.status(201).json({ success: true, data: { ...deviceData, groups: groupIds } });
   } catch (e) {
     next(e);
   }

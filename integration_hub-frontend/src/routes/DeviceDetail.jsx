@@ -94,7 +94,7 @@ export default function DeviceDetail() {
       const changes = {};
       if (formData.name !== device.name) changes.name = formData.name;
       if (formData.claimToken !== (device.claimToken || '')) changes.claimToken = formData.claimToken;
-      const originalGroups = (device.groupIds || []).map(group => group._id || group).sort();
+      const originalGroups = (device.groups || []).map(group => group._id).sort();
       if (JSON.stringify([...formData.groupIds].sort()) !== JSON.stringify(originalGroups)) {
         changes.groupIds = formData.groupIds;
       }

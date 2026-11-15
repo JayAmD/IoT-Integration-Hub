@@ -40,7 +40,10 @@ const updateDevice = async (req, res, next) => {
       }
     }
 
-    res.status(200).json({ success: true, data: updatedDevice });
+    await updatedDevice.populate("groupIds", "name");
+    const { groupIds, ...deviceData } = updatedDevice.toObject();
+
+    res.status(200).json({ success: true, data: { ...deviceData, groups: groupIds } });
   } catch (e) {
     next(e);
   }
