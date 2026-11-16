@@ -12,6 +12,7 @@ export default function Credentials() {
   const { 
     credentials, 
     isLoading, 
+    error,
     loadCredentials, 
     addCredential, 
     updateCredential, 
@@ -127,6 +128,8 @@ export default function Credentials() {
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
           <CircularProgress />
         </Box>
+      ) : error ? (
+        <Alert severity="error">{error}</Alert>
       ) : (
         <CredentialList 
           credentials={credentials}
