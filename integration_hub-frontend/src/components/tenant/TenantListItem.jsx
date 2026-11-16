@@ -273,7 +273,11 @@ export const TenantListItem = ({
 
             {/* Expanded members section — always available */}
             <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                <Box sx={{ px: { xs: 1.5, md: 2.5 }, pb: 2, backgroundColor: 'action.hover' }}>
+                <Box
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    sx={{ px: { xs: 1.5, md: 2.5 }, pb: 2, backgroundColor: 'action.hover' }}
+                >
                     <MembersList
                         tenant={tenant}
                         tenantId={tenant._id}
