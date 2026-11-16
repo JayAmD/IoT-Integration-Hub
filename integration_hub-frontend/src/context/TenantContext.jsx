@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
 import { tenantApi } from '../api/tenantApi.js';
+import { useAuthContext } from './AuthContext.jsx';
 
 // 1. Create the context
 const TenantContext = createContext(null);
@@ -7,6 +8,7 @@ const TenantContext = createContext(null);
 // 2. Create the TenantProvider component
 export const TenantProvider = ({ children }) => {
     const [tenants, setTenants] = useState([]);
+    const { bootstrapTenants } = useAuthContext();
 
     // Load all tenants
     const loadTenants = async () => {
@@ -33,6 +35,7 @@ export const TenantProvider = ({ children }) => {
     const addTenant = async (tenantData) => {
         try {
             const newTenant = await tenantApi.create(tenantData);
+            await bootstrapTenants();
             setTenants((prev) => [...prev, newTenant]);
             return newTenant;
         } catch (err) {
