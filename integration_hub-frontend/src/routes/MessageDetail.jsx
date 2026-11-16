@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, CircularProgress, Typography, Button, Stack } from "@mui/material";
+import { Alert, Box, CircularProgress, Typography, Button, Stack } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import { useAuthContext } from "../context/AuthContext.jsx";
@@ -78,6 +78,8 @@ export default function MessageDetail() {
         onRefresh={handleRefresh}
         isLoading={isLoading}
       />
+
+      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       <Stack spacing={3}>
         <MessageOverview message={message} tenantId={activeTenantId} />
