@@ -79,6 +79,7 @@ export default function Tenants() {
             showSnackbar('Tenant created successfully!');
         } catch (err) {
             showSnackbar(err.message || 'Failed to create tenant', 'error');
+            throw err;
         }
     };
 

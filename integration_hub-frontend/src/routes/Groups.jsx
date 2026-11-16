@@ -73,6 +73,7 @@ export default function Groups() {
             showSnackbar("Group created successfully!");
         } catch (err) {
             showSnackbar(err.message || "Failed to create group", "error");
+            throw err;
         }
     };
 
