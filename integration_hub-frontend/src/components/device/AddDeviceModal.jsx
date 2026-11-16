@@ -17,6 +17,7 @@ const AddDeviceModal = ({
     claimToken: '',
     groups: [],
   });
+
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,7 +40,7 @@ const AddDeviceModal = ({
     onClose();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Prepare payload for the orchestrator
@@ -50,7 +51,10 @@ const AddDeviceModal = ({
       groupIds: formData.groups,
     };
 
-    onAddDevice(devicePayload);
+    const success = await onAddDevice(devicePayload);
+    if (success) {
+      setFormData({ name: '', serialNumber: '', claimToken: '', groups: [] });
+    }
   };
 
   return (

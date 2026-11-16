@@ -46,9 +46,11 @@ export default function Devices() {
       await addDevice(activeTenantId, devicePayload);
       setSnackbarOpen(true);
       setIsAddModalOpen(false);
+      return true;
     } catch (err) {
       console.error('Failed to add device:', err);
       setSubmitError(err.message || 'Failed to add device. Please try again.');
+      return false;
     } finally {
       setIsSubmitting(false);
     }
